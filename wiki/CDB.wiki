@@ -1,0 +1,35 @@
+#summary Column DataBase description
+
+= Introduction =
+
+ColumnDB
+database where each column stored in file (in contrast to more traditional design there one file used, and rows written by row).
+ 
+This design permit to read only columns we really need, and skip others - less I/O.
+
+more details in http://en.wikipedia.org/wiki/Column-oriented_DBMS
+
+= Details =
+
+  * every column is compressed (with lzo - we need very fast decompression)
+  * append support.
+  * no index, only FTS (Ful Table Scan)
+  * read and decompress only required data (CDB key-feature)
+  * partially sorted data (better compression, more friendly for report generation)
+
+caching: since data compressed - we can't waste RAM with uncompressed data, VFS seems to cache files good enough.
+
+== Column internals ==
+
+On disk every data file is a:
+
+{{{
+[[element#][size][data]][...]
+}}}
+
+where:
+  * element# - is a number of compressed elements.
+  * size - size of data segment. 
+  * data - lzo-compressed blob (from original data), so we must decompress it at once, and process then. We limit number of elements (before compression) to 1M - so we should operate with relative small chunks, to win from read-ahead.
+
+Original data is sorted, so CDB columns will be semi-sorted - this is very helpful to improve data locality in further report generation.

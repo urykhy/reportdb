@@ -1,0 +1,30 @@
+== CDB ==
+
+  * used bench-cdb (10M records, no filtering)
+  * time is avg of 3 runs
+
+|| cpu              || time     ||
+|| pentium m 600Mhz || 0.949264 ||
+|| pentium 4 3Gh    || 0.361768 ||
+|| core2 q6600      || 0.191043 ||
+
+
+
+*CDB vs CDB/TL bench (time to run on 4way core2 quad, 10 files, lower - better)*
+
+|| THR ||  CDB     || CDB/TL    || no narrow ||
+|| 1   || 3.88121  || 3.98515   || 3.62957   ||
+|| 2   || 1.96747  || 2.02517   || 1.82272   ||
+|| 4   || 1.21114  || 1.24471   || 1.12791   ||
+|| 6   || 1.19174  || 1.27674   || 1.10896   ||
+
+so, we can see a bit regression, caused by Narrow (it empty in CDB case, 'no narrow' is a  CDB/TL without filtering)
+
+*Build flags (time to run on Pentium4 box, 4 files, 1 thread, sum of 3 runs)*
+
+|| flags         || time || instructions used(via analyze-x86) ||
+|| -march=native || 6.74 || i686:62  mmx:25  sse2:45 ||
+|| n             || 6.87 || ||
+
+we can find that -march can be used to improve performance a bit.
+

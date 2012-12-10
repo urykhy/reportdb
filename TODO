@@ -1,0 +1,29 @@
+
+MDC:
+	Unify: ArLZO and MDC::Filter::* ?
+		they looks similar in purpose
+
+CDB:
+	use mmap in CDBRow as file-read-interface ?
+	tests IRL required
+
+	TL Narrow::operator() a bit slower (suprise)
+	than empty implemntation:
+	CDB/TL bench is a bit slower than trivial generic impl.
+
+TL:
+	adopt boost ?
+	rm Index::first_join
+
+Bench:
+	generate better data
+
+Future:
+	b+tree can performs better than std::map/set(rbtree)
+	(stx-btree from idlebox.net) (much less cache misses)
+	(it now packaged for debian in stx-btree-dev)
+
+NOTES:
+	we can't use ifstream: imposible to get eof() before actual attempt to read
+
+

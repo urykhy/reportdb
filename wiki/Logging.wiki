@@ -1,0 +1,7 @@
+#summary Logging notes
+
+'Util::Logger::ILogger' inteface provided to user to implement a logging.
+
+You can refere to 'DefaultLogger' implementation for details about logger implementation,
+and 'src/tools/bench-thread-cdb.cpp' to sample of using it.
+

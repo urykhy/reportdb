@@ -1,0 +1,78 @@
+#summary MultiDimensionalClustering description
+
+= Introduction =
+
+MDC - is a on-disk-format to provide fast index lookups, and read-ahead friendly disk access.
+
+= Details =
+
+a lot of mdc-details can be found in :
+http://domino.watson.ibm.com/comm/research.nsf/pages/r.datamgmt.innovation.mdc.html
+
+data can be stored in few ways (least in size method is selected per cluster)
+  * serialized bitset - can be used for data less or equal to UINT_32
+  * lzo compressed stream - can be used on any data
+  * serialized stream - can be used on small data chunks to avoid decompression overhead.
+
+Actual compression performed by MDC::Filter::* classes. Compression is adaptive - small block will not be compressed.
+
+Index:
+  * built around a bitsets, so lookups should be fast.
+  * can be cached
+
+== Internals ==
+
+Every MDC is a 3 files on disk.
+  * data - data file, serialized data lives here
+  * pk - primary key - used access .data file
+  * keys - top level key to allow indexed access
+
+*data*
+{{{
+ [data][...][...
+}}}
+
+is a sequence of serialized-data. to access we need a offset and size (stored in index)
+
+*primary key*
+{{{
+ [[offset][size]][...][...
+}}}
+  * offset - serialized-data offset in file
+  * size - size of serialized-data
+
+so for 10th custer - we need 10th entry in pk file.
+
+*keys*
+{{{
+ [[key]][...][...
+}}}
+   * key - is a user defined key. key with number 1 corresponds to 1st entry in PK file, and first cluster in data file.
+
+*images*
+
+say we have a large data set, and 2 indexes (age, gender)
+
+
+http://keep4u.ru/imgs/b/2009/10/15/e2/e2f55730e09461255798890caf597446.jpg
+
+We can split large-data-set to multiple small (say clusters), and write cluster by cluster to disk (this is data file).
+
+As incoming data is stored in std::map - clusters on disk will be sorted (as keys in map)
+
+{{{
+[gender=0, age=0][gender=0, age=1]....[gender=0, age=99][gender=1, age=0]...
+}}}
+
+Ok,
+how this working:
+  say we have 2 dimensions (age and gender), and running a report where gender is 0.
+
+  * open PK and key files and build bitset index (we got 2 std::map<int, bitset> instances ( say index-age and index-gender)
+  * open data file
+  * check index to get cluster's indexes where gender is 0 ( we check index-gender(0) and got a bitset with clusters-indexes we should process)
+  * for each cluster in bitset we process:
+    * get offset and size from PK
+    * read compressed data and decompress
+    * pass data with key information to report-generator.
+  

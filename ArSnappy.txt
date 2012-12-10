@@ -1,0 +1,16 @@
+
+benchmark snappy/lzo compression in cdb
+
+					snappy		lzo
+generate data:		fast		slow
+data size:			212M		154
+runtime warm:		2.43682     2.57484  // datafiles cached in ram
+runtime cold:       6.48397     5.20997  // datafiles readed from disk
+
+so, snappy
+	use 30% extra disk space
+	+5% decompress performance / warm
+	-20% decompress performance / cold
+
+ps: not-compressed data size - 360M
+
