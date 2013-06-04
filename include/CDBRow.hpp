@@ -26,8 +26,8 @@ class Row {
 
 		typedef std::vector<T> BufT;
 		BufT buf;
-		//Util::SyncWriteFile disk;
-		Util::HFile disk;
+		Util::SyncWriteFile disk;
+		//Util::HFile disk;
 		const std::string suffix;
 
 		AR lzo;

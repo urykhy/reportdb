@@ -12,6 +12,8 @@
 #include <sys/time.h>
 #include <tr1/random>
 #include <deque>
+#include <boost/program_options.hpp>
+namespace po = boost::program_options;
 
 static const UINT_32 MAX_ROWS=10000000; // 10M
 
@@ -187,41 +189,29 @@ int main(int argc, char** argv)
 	int opt_thr_count = -1;
 	int opt_verbose = 0;
 
-	if (argc == 1) {
-		usage();
-		return -1;
-	}
+	po::options_description desc("Program options");
+	desc.add_options()
+		("help,h", "show usage information")
+		("generate",po::bool_switch(), "generate test data")
+		("bench", po::bool_switch(), "benchmark")
+		("count", po::value<int>(&opt_count), "number of files to use (1)")
+		("threads", po::value<int>(&opt_thr_count), "number of threads to run (auto)")
+		("verbose", po::bool_switch(), "verbose logging");
 
-	static struct option long_options[] = {
-		{"generate",              0, &opt_generate, 1},
-		{"bench",                 0, &opt_bench, 1},
-		{"count",  required_argument, NULL, 3},
-		{"threads",required_argument, NULL, 4},
-		{"verbose",               0, &opt_verbose, 1},
-		{0,0,0,0} };
+	po::variables_map vm;
+	po::store(po::parse_command_line(argc, argv, desc), vm);
+	po::notify(vm);
+	if (argc == 1 || vm.count("help")) {
+		std::cout << desc << std::endl;
+		return 0;
+	}
+	if (vm["verbose"].as<bool>() == true) { opt_verbose=1; }
+	if (vm["generate"].as<bool>() == true) { opt_generate=1; }
+	if (vm["bench"].as<bool>() == true) { opt_bench=1; }
 
-	int rc = 0;
-	while (rc != -1)
-	{
-		rc = getopt_long(argc, argv, "", long_options, NULL);
-		switch (rc){
-			case 3: opt_count=atol(optarg); break;
-			case 4: opt_thr_count=atol(optarg); break;
-			case '?':
-					exit(-1);
-			default:
-					break;
-		}
-	}
-	if (optind != argc) {
-		std::cout << "Unrecognized option '" << argv[optind] << "'" << std::endl;
-		usage();
-		return -1;
-	}
 
 	Util::Logger::DefaultLogger defaultLogger;
 	Util::Logger::Manager::setup(&defaultLogger, opt_verbose ? Util::ILogger::TRACE : Util::ILogger::DEBUG);
-
 
 	std::cout << "processing with " << opt_count
 		<< " files ("

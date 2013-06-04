@@ -16,6 +16,7 @@
 #include <unistd.h>
 
 namespace Util {
+namespace aux {
 
 class BasicFile {
 	private:
@@ -140,8 +141,8 @@ struct NiceFile : public Impl {
 		}
 };
 
-typedef NiceFile<BasicFile> HFile;
-
+} // aux
+typedef aux::NiceFile<aux::BasicFile> HFile;
 } // namespace Util
 
 #endif /* _H_File_HPP__ */

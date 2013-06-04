@@ -46,7 +46,6 @@ class WriteCounter {
 			return used == 0;
 		}
 };
-} // namespace aux
 
 // write file
 // sync + drop written parts from pagecache
@@ -97,8 +96,9 @@ class SyncWriteImpl {
 			}
 		}
 };
+} // aux
 
-typedef Util::NiceFile<Util::SyncWriteImpl> SyncWriteFile;
+typedef Util::aux::NiceFile<Util::aux::SyncWriteImpl> SyncWriteFile;
 
 } // namespace Util
 
