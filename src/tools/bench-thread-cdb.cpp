@@ -183,20 +183,20 @@ void usage()
 
 int main(int argc, char** argv)
 {
-	int opt_generate = 0;
-	int opt_bench = 0;
+	bool opt_generate = 0;
+	bool opt_bench = 0;
 	int opt_count = 1;
 	int opt_thr_count = -1;
-	int opt_verbose = 0;
+	bool opt_verbose = 0;
 
 	po::options_description desc("Program options");
 	desc.add_options()
 		("help,h", "show usage information")
-		("generate",po::bool_switch(), "generate test data")
-		("bench", po::bool_switch(), "benchmark")
+		("generate",po::bool_switch(&opt_generate), "generate test data")
+		("bench", po::bool_switch(&opt_bench), "benchmark")
 		("count", po::value<int>(&opt_count), "number of files to use (1)")
 		("threads", po::value<int>(&opt_thr_count), "number of threads to run (auto)")
-		("verbose", po::bool_switch(), "verbose logging");
+		("verbose", po::bool_switch(&opt_verbose), "verbose logging");
 
 	po::variables_map vm;
 	po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -205,10 +205,6 @@ int main(int argc, char** argv)
 		std::cout << desc << std::endl;
 		return 0;
 	}
-	if (vm["verbose"].as<bool>() == true) { opt_verbose=1; }
-	if (vm["generate"].as<bool>() == true) { opt_generate=1; }
-	if (vm["bench"].as<bool>() == true) { opt_bench=1; }
-
 
 	Util::Logger::DefaultLogger defaultLogger;
 	Util::Logger::Manager::setup(&defaultLogger, opt_verbose ? Util::ILogger::TRACE : Util::ILogger::DEBUG);
