@@ -171,16 +171,6 @@ struct Bench {
 	}
 };
 
-void usage()
-{
-	std::cout << "Usage: " << std::endl
-		<< "       --generate     - generate test data" << std::endl
-		<< "       --bench        - benchmark" <<std::endl
-		<< "       --count        - number of files to use (1)" <<std::endl
-		<< "       --threads      - number of threads to run (auto)" <<std::endl
-		<< std::endl;
-}
-
 int main(int argc, char** argv)
 {
 	bool opt_generate = 0;
