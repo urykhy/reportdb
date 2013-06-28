@@ -11,6 +11,17 @@ so, snappy
 	use 30% extra disk space
 	+5% decompress performance / warm
 	-20% decompress performance / cold
-
 ps: not-compressed data size - 360M
+
+---------------------------------------
+
+benchmark LZO/LZ4
+				lzo			lz4
+generate:		1.59m		5 sec
+run1			1.19312		1.48405
+run2			0.920565	0.831869
+run3			0.89247		0.791396
+diskusage		37M			62M
+
+----------------------------------------
 
