@@ -19,17 +19,25 @@ namespace tut
 		Util::SyncWriteFile f;
 		f.open("__testfile1.bin", O_CREAT|O_WRONLY|O_APPEND);
 
-		char* buf = (char*)malloc(12346789);
-		for (size_t i = 0 ; i < 12346789; i++) {
+		size_t fs = 22346789;
+		char* buf = (char*)malloc(fs);
+		for (size_t i = 0 ; i < fs; i++) {
 			*(buf+i) = (i%26) + 'A';
 		}
-		f.write(buf,  6000000);
-		f.write(buf+6000000, 6346789);
+
+		for (size_t i = 0; i < fs; ) {
+			size_t len = 3000000 + (rand() % 1000);
+			if (i+len > fs) {
+				len = fs - i;
+			}
+			f.write(buf+i, len);
+			i += len;
+		}
 		f.close();
 
 		f.open("__testfile1.bin",O_RDONLY);
-		f.read(buf, 12346789);
-		for (size_t i = 0 ; i < 12346789; i++) {
+		f.read(buf, fs);
+		for (size_t i = 0 ; i < fs; i++) {
 			ensure("data written ok", *(buf+i) == (char)((i%26) + 'A'));
 			//if (*((unsigned char*)buf+i) != (i%26) + 'A') {
 			//	std::cerr << "err pos " << i << std::endl;

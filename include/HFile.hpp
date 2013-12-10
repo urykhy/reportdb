@@ -98,10 +98,12 @@ class BasicFile {
 		}
 
 		void sync_range(off64_t offset, off64_t nbytes, unsigned int flags) {
-			assert(! ::sync_file_range(fd, offset, nbytes, flags));
+			auto x = ::sync_file_range(fd, offset, nbytes, flags);
+			assert (!x);
 		}
 		void advise(off64_t offset, off64_t nbytes, unsigned int flags) {
-			assert(! ::posix_fadvise(fd, offset, nbytes, flags));
+			auto x = ::posix_fadvise(fd, offset, nbytes, flags);
+			assert (!x);
 		}
 
 		bool is_open() const

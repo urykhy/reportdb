@@ -22,17 +22,18 @@ class WriteCounter {
 			if (!used) {
 				write_pos = fd.get_pos();
 			}
-			//std::cerr << "write " << l << " bytes starting " << write_pos << std::endl;
+			//std::cerr << "write " << l << " bytes; range start at " << write_pos << std::endl;
 			fd.write(s, l);
 			used += l;
 			return used;
 		}
 		void sync(BasicFile& fd) {
 			fd.sync_range(write_pos, used, SYNC_FILE_RANGE_WRITE);
+			//std::cerr << "sync from " << write_pos << ", size " << used << std::endl;
 		}
 		void wait(BasicFile& fd) {
 			if (!empty()) {
-				//std::cerr << "sync " << used << " bytes at " << write_pos << std::endl;
+				//std::cerr << "wait from "<< write_pos << ", size " << used << std::endl;
 				fd.sync_range(write_pos, used, SYNC_FILE_RANGE_WAIT_BEFORE | SYNC_FILE_RANGE_WRITE | SYNC_FILE_RANGE_WAIT_AFTER);
 				fd.advise(write_pos, used, POSIX_FADV_DONTNEED);
 				clear();
@@ -92,6 +93,7 @@ class SyncWriteImpl {
 			const ssize_t window = 1024*4096;
 			ssize_t used = buf[current].write(impl, data, len);
 			if (used >= window) {
+				std::cerr << "flush" << std::endl;
 				flush();
 			}
 		}
