@@ -75,7 +75,7 @@ namespace Util {
 
 					std::stringstream m;
 					m << result.tm_year+1900 << "-"
-					  << std::setfill('0') << std::setw(2) << result.tm_mon  << "-"
+					  << std::setfill('0') << std::setw(2) << result.tm_mon + 1 << "-"
 					  << std::setw(2) << result.tm_mday << " "
 					  << std::setw(2) << result.tm_hour << ":"
 					  << std::setw(2) << result.tm_min  << ":"
