@@ -18,9 +18,9 @@ namespace po = boost::program_options;
 static const UINT_32 MAX_ROWS=10000000; // 10M
 
 	// define a Table
-    CDB_BEGIN_TABLE(Root)
+	CDB_BEGIN_TABLE(Root)
 		CDB_COLUMN(gender, UINT_8)
-	    CDB_COLUMN(uid, UINT_32)
+		CDB_COLUMN(uid, UINT_32)
 		CDB_COLUMN(slot, UINT_32)
 	CDB_END_TABLE(Root)
 

@@ -84,8 +84,8 @@ namespace MDC {
 			void operator()(T& t)
 			{
 				for(auto i = t.begin();
-					     i != t.end();
-					     ++i)
+						 i != t.end();
+						 ++i)
 				{
 					counter += i->second.mem_used();
 				}

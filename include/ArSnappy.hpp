@@ -23,7 +23,7 @@ class ArSnappy {
 		typedef std::vector<char> BufferT;
 
 		explicit ArSnappy() {
-		    ;;
+			;;
 		}
 
 		template<class T>

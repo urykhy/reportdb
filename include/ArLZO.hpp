@@ -25,7 +25,7 @@ class ArLZO {
 		typedef std::vector<UCHAR_8> BufferT;
 
 		explicit ArLZO() : lzoTemp(LZO1X_999_MEM_COMPRESS){
-		    ;;
+			;;
 		}
 
 		// FIXME: store original size in bytes

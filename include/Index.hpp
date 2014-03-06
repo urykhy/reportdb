@@ -12,7 +12,7 @@
 #pragma GCC diagnostic ignored "-Wempty-body"
 #pragma GCC diagnostic ignored "-Wunused-but-set-variable"
 #pragma GCC diagnostic ignored "-Wtype-limits"
-#pragma GCC diagnostic ignored "-fpermissive"
+#pragma GCC diagnostic warning "-fpermissive"
 #define BMCOUNTOPT
 #include <bm.h>
 #include <bmserial.h>

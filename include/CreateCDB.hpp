@@ -40,8 +40,8 @@ class Create {
 			LOG4_TRACE("about to insert " << data.size() << " elements");
 			ac.reserve(MAX_ROWS);
 			for (auto i = data.begin();
-				      i != data.end();
-				      ++i, ++counter )
+					  i != data.end();
+					  ++i, ++counter )
 			{
 				if (counter >= MAX_ROWS)
 				{
