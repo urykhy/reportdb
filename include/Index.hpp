@@ -12,6 +12,8 @@
 #pragma GCC diagnostic ignored "-Wempty-body"
 #pragma GCC diagnostic ignored "-Wunused-but-set-variable"
 #pragma GCC diagnostic ignored "-Wtype-limits"
+#pragma GCC diagnostic ignored "-Wunused-local-typedefs"
+#pragma GCC diagnostic ignored "-Wsizeof-pointer-memaccess"
 #pragma GCC diagnostic warning "-fpermissive"
 #define BMCOUNTOPT
 #include <bm.h>

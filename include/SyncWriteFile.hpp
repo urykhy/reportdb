@@ -93,7 +93,7 @@ class SyncWriteImpl {
 			const ssize_t window = 1024*4096;
 			ssize_t used = buf[current].write(impl, data, len);
 			if (used >= window) {
-				std::cerr << "flush" << std::endl;
+				//std::cerr << "flush" << std::endl;
 				flush();
 			}
 		}
