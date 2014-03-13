@@ -99,18 +99,18 @@ namespace MDC {
 			void insert(Key& key, UINT_32 cube)
 			{	// insert a value to index
 				Inserter inserter(cube);
-				ForEach2(key, index, inserter);
+				tuple_for_each2(inserter, key, index);
 			}
 			template<class N>
 			void lookup(Util::Index& cubes, N& narrow)
 			{	// find clusters's we going to process
 				Narrower na(cubes);
-				ForEach2(index, narrow.limit, na);
+				tuple_for_each2(na, index, narrow.limit);
 			}
 			size_t mem_used()
 			{	// return index size (bitset only)
 				MemUsageCounter muc;
-				ForEach(index, muc);
+				tuple_for_each(muc, index);
 				return muc.counter;
 			}
 		};
@@ -142,7 +142,7 @@ namespace MDC {
 			bool empty()
 			{
 				CheckIfEmpty ce;
-				ForEach(limit, ce);
+				tuple_for_each(ce, limit);
 				return ce.empty;
 			}
 		};
@@ -156,10 +156,10 @@ namespace MDC {
 		typedef KeyT Key;
 		typedef ValueT Val;
 
-		typedef typename TL::ForEachT<Key, TL::DeriveIndex>::Result IndexTL;
+		typedef typename TL::apply_t<TL::DeriveIndex, Key>::Result IndexTL;
 		typedef TL::MakeIndex<Key, IndexTL> Index;
 
-		typedef typename TL::ForEachT<Key, TL::DeriveLimit>::Result LimitTL;
+		typedef typename TL::apply_t<TL::DeriveLimit, Key>::Result LimitTL;
 		typedef TL::MakeNarrow<LimitTL> Narrow;
 	};
 

@@ -1,0 +1,12 @@
+CMakeCache.txt
+CMakeFiles
+CPackConfig.cmake
+CPackSourceConfig.cmake
+CTestTestfile.cmake
+cmake_install.cmake
+install_manifest.txt
+Makefile
+bin/
+Testing/
+.gdb_history
+*.swp

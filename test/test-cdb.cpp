@@ -110,10 +110,10 @@ namespace tut
 			}
 
 			Accessor()
-			: age(".age"),
-			  gender(".gender"),
-			  city(".city"),
-			  uid(".uid")
+			: age(".age", 1),
+			  gender(".gender", 2),
+			  city(".city", 4),
+			  uid(".uid", 8)
 			{
 				;;
 			}

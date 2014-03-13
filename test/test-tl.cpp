@@ -25,7 +25,7 @@ namespace tut
 	//
 	// MDC/TL interface test
 	//
-	typedef TL::MakeTypelist<UINT_32, UINT_32, UINT_32>::Result mdc_Key;
+	typedef std::tuple<UINT_32, UINT_32, UINT_32> mdc_Key;
 	typedef UINT_32 mdc_Val;
 	typedef Client<mdc_Key, mdc_Val> Data;
 
@@ -62,10 +62,7 @@ namespace tut
 		// fill with data
 		Data::Key e;
 		for (INT_8 i=10; i<20; i++) {
-			//e.arg=i;                        // first element
-			//e.right.arg=0;                  // second
-			//e.right.right.arg=0;            // 3rd element
-			TL::SetArg(e, i, 1, 1);
+			e = TL::ctie(i, 1, 1);
 			for(UINT_32 k=0; k<5; k++ ) {
 				id[e].push_back(k*100+1);     // value
 			}
@@ -84,8 +81,8 @@ namespace tut
 		}
 		{
 			Data::Narrow narrow;
-			TL::get<0>(narrow.limit).insert(11);
-			TL::get<0>(narrow.limit).insert(12);
+			std::get<0>(narrow.limit).insert(11);
+			std::get<0>(narrow.limit).insert(12);
 			Worker1 worker1;
 			uc.access(narrow, worker1, filter);
 			ensure("worker call count/2", 10 == worker1.calls);
@@ -96,9 +93,9 @@ namespace tut
 		// test empty index bug.
 		{
 			Data::Narrow narrow;
-			TL::get<0>(narrow.limit).insert(11);
-			TL::get<1>(narrow.limit).insert(2);	// index should have 0 elements now
-			TL::get<2>(narrow.limit).insert(1); // index should still have 0 elements
+			std::get<0>(narrow.limit).insert(11);
+			std::get<1>(narrow.limit).insert(2);	// index should have 0 elements now
+			std::get<2>(narrow.limit).insert(1); // index should still have 0 elements
 			Worker1 worker1;
 			uc.access(narrow, worker1, filter);
 			ensure("worker call count/3", 0 == worker1.calls);
@@ -152,7 +149,7 @@ namespace tut
 				UINT_32 lead_uid = city*100 + age * 10;
 				for (UINT_32 uid = 0; uid < 5; uid++)
 				{
-					TL::SetArg(d, age, city, uid + lead_uid);
+					d = TL::ctie(age, city, uid + lead_uid);
 					id.insert(d);
 				}
 			}
@@ -173,8 +170,8 @@ namespace tut
 			ensure("ColumnName_uid is 4", ColumnName_uid == 4);
 			CDB::Use<Root> uc(fn);
 			Root::Narrow narrow;
-			TL::get<0>(narrow.index).insert(10); // age 10
-			TL::get<1>(narrow.index).insert(109) ; // city 109
+			std::get<0>(narrow.index).insert(10); // age 10
+			std::get<1>(narrow.index).insert(109) ; // city 109
 			// UID not limited
 			Worker2 worker;
 			uc.access(narrow, worker);

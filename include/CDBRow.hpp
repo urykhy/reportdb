@@ -30,6 +30,7 @@ class Row {
 		Util::SyncWriteFile disk;
 		//Util::HFile disk;
 		const std::string suffix;
+		const UINT_64 id;
 
 		AR lzo;
 		typedef typename AR::BufferT ArBufferT;
@@ -38,9 +39,13 @@ class Row {
 	public:
 		typedef T value_type;
 
-		explicit Row(const std::string& suffixIn)
-		: suffix(suffixIn)
+		explicit Row(const std::string& suffixIn, UINT_64 idIn)
+		: suffix(suffixIn), id(idIn)
 		{
+		}
+
+		UINT_64 get_column() const {
+			return id;
 		}
 
 		void reserve(size_t s)

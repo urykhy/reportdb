@@ -73,8 +73,8 @@ struct Root {
 		}
 
 		Accessor()
-		: gender(".gender"),
-		uid(".uid")
+		: gender(".gender", 1),
+		uid(".uid", 2)
 		{
 			;;
 		}

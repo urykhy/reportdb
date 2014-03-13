@@ -40,8 +40,8 @@ struct Worker1
 	}
 	void operator()(const Root::Accessor& ac, size_t rown)
 	{
-		UINT_8 gender_ = CDB::TL::get<0>(ac.acc).get(rown);
-		UINT_32 uid_ = CDB::TL::get<1>(ac.acc).get(rown);
+		UINT_8 gender_ = std::get<0>(ac.acc).get(rown); //CDB::TL::get<0>(ac.acc).get(rown);
+		UINT_32 uid_ = std::get<1>(ac.acc).get(rown); //CDB::TL::get<1>(ac.acc).get(rown);
 		// count uid's per gender
 		uid[ gender_ ].set( uid_ );
 		calls++;
@@ -105,7 +105,8 @@ struct Generate {
 			UINT_32 uid = cur % MAX_ROWS;
 			UINT_32 slot = cur % MAX_SLOTS;
 
-			CDB::TL::SetArg(v, gender, uid, slot);
+			v = std::tie(gender, uid, slot);
+			//CDB::TL::SetArg(v, gender, uid, slot);
 			if (id.find(v) == id.end())
 			{
 				id.insert(v);

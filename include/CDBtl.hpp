@@ -29,9 +29,7 @@ namespace CDB {
 			template<class Data>
 			void push_back(const Data& d) {
 				Push push;
-				// FIXME: rm const_cast
-				Data& d_const = const_cast<Data&>(d);
-				ForEach2(acc, d_const, push);
+				tuple_for_each2(push, acc, d);
 			}
 
 			struct Open {
@@ -45,9 +43,9 @@ namespace CDB {
 				: fn(fn_), di(di_), columns(columns_) {}
 
 				template<class T>
-				void operator()(T& t, INT_32 len)
+				void operator()(T& t)
 				{
-					if (1 << len & columns) {
+					if (t.get_column() & columns) {
 						//std::cout << "open for [" << t.name() << "]" << std::endl;
 						t.open(fn, di);
 					}
@@ -56,7 +54,7 @@ namespace CDB {
 			void open(const std::string& fn, CDB::Direction di, const UINT_64 columns)
 			{
 				Open op(fn, di, columns);
-				ForEachN(acc, op);
+				tuple_for_each(op, acc);
 			}
 
 			struct Reserve {
@@ -72,7 +70,7 @@ namespace CDB {
 			void reserve(size_t s)
 			{
 				Reserve op_res(s);
-				ForEach(acc, op_res);
+				tuple_for_each(op_res, acc);
 			}
 
 			struct Write {
@@ -84,7 +82,7 @@ namespace CDB {
 			};
 			void write() {
 				Write wr;
-				ForEach(acc, wr);
+				tuple_for_each(wr, acc);
 			}
 
 			struct Read {
@@ -93,8 +91,8 @@ namespace CDB {
 				Read(const UINT_64 columns_) : columns(columns_), sz(0) {}
 
 				template<class T>
-				void operator()(T& t, INT_32 len){
-					if (1 << len & columns) {
+				void operator()(T& t){
+					if (t.get_column() & columns) {
 						size_t rc = t.read();
 						if (!sz) {
 							sz = rc;
@@ -107,7 +105,7 @@ namespace CDB {
 			};
 			size_t read(const UINT_64 columns) {
 				Read re(columns);
-				ForEachN(acc, re);
+				tuple_for_each(re, acc);
 				return re.sz;
 			}
 
@@ -119,7 +117,7 @@ namespace CDB {
 			};
 			void close() {
 				Close cl;
-				ForEach(acc, cl);
+				tuple_for_each(cl, acc);
 			}
 
 			struct IsEof {
@@ -130,9 +128,9 @@ namespace CDB {
 				: stop(false), columns(columns_), rc(false) {}
 
 				template<class T>
-				void operator()(T& t, INT_32 len)
+				void operator()(T& t)
 				{
-					if (!stop && 1 << len & columns) {
+					if (!stop && t.get_column() & columns) {
 						//std::cout << "eof for [" << t.name() << "]" << std::endl;
 						rc = t.eof();
 						stop = true;
@@ -141,7 +139,7 @@ namespace CDB {
 			};
 			bool eof(const UINT_64 columns) {
 				IsEof iseof(columns);
-				ForEachN(acc, iseof);
+				tuple_for_each(iseof, acc);
 				return iseof.rc;
 			}
 		};
@@ -156,19 +154,21 @@ namespace CDB {
 			Index index;
 
 			struct FindColumns {
-				UINT_64 rc;
-				FindColumns() : rc(0) {}
+				UINT_64 counter = 0;
+				UINT_64 rc = 0;
+				FindColumns() {}
 				template<class T>
-				void operator()(T& t, INT_32 len) {
+				void operator()(T& t) {
 					if (!t.empty()) {
-						rc |= 1 << len;
+						rc |= 1 << counter;
 					}
+					counter++;
 				}
 			};
 			UINT_64 columns ()
 			{
 				FindColumns fc;
-				ForEachN(index, fc);
+				tuple_for_each(fc, index);
 				return fc.rc;
 			}
 
@@ -191,7 +191,7 @@ namespace CDB {
 			bool operator()(Acc& ac, const size_t rown)
 			{
 				CheckIndex cindex(rown);
-				ForEach2(index, ac.acc, cindex);
+				tuple_for_each2(cindex, index, ac.acc);
 				return cindex.rc;
 			}
 		};
@@ -200,24 +200,24 @@ namespace CDB {
 
 	template<class T>
 	struct MakeRoot {
-		typedef typename TL::ForEachT<T, TL::DeriveData>::Result Data;
+		typedef typename TL::apply_t<TL::DeriveData, T>::Result Data;
 		typedef TL::Accessor<T> Accessor;
 
-		typedef typename TL::ForEachT<T, TL::DeriveIndex>::Result Index;
+		typedef typename TL::apply_t<TL::DeriveIndex, T>::Result Index;
 		typedef TL::Narrow<Accessor, Index> Narrow;
 	};
 
 #define CDB_BEGIN_TABLE(NAME) \
-	typedef Util::TL::TypeList<Util::TL::null_type, Util::TL::null_type>
+	typedef std::tuple<>
 
 #define CDB_COLUMN(NAME, TYPE) \
 	members_before_##NAME; \
+	static const UINT_64 ColumnName_##NAME = 1 << std::tuple_size<members_before_##NAME>::value ; \
 	struct NAME##_base { static const char* name() { return "."#NAME; } }; \
 	struct NAME##_row : public CDB::Row<TYPE> { \
-		NAME##_row() : CDB::Row<TYPE>(NAME##_base::name()) {} \
+		NAME##_row() : CDB::Row<TYPE>(NAME##_base::name(), ColumnName_##NAME) {} \
 	}; \
-	typedef Util::TL::AddTail<members_before_##NAME, NAME##_row>::Result NAME##current; \
-	static const UINT_64 ColumnName_##NAME = 1 << members_before_##NAME::length ; \
+	typedef Util::TL::append_tail<NAME##_row, members_before_##NAME>::Result NAME##current; \
 	typedef NAME##current
 
 #define CDB_END_TABLE(NAME) \
