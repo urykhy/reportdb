@@ -5,7 +5,7 @@
 #ifndef _AR_LZ4_HPP__
 #define _AR_LZ4_HPP__
 
-#include <Types.h>
+#include <stdint.h>
 #include <ReportException.hpp>
 #include <vector>
 
@@ -20,7 +20,7 @@ class ArLZ4 {
 		ArLZ4& operator=( const ArLZ4&);
 
 	public:
-		typedef std::vector<UCHAR_8> BufferT;
+		typedef std::vector<unsigned char> BufferT;
 
 		explicit ArLZ4() { ;; }
 
@@ -49,7 +49,7 @@ class ArLZ4 {
 		void Decompress(const unsigned char* data, size_t size, std::vector<T>& out)
 		{
 			ssize_t countBS = sizeof(T)*out.size();
-			INT_32 r = LZ4_decompress_fast((const char*)data, (char*)&out.front(), countBS);
+			int32_t r = LZ4_decompress_fast((const char*)data, (char*)&out.front(), countBS);
 			if(r < 0) {
 				Util::fire_exception("lz4 decompress failed", r);
 			}

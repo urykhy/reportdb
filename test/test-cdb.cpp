@@ -21,10 +21,10 @@ namespace tut
 			I_CITY   = 1 << 2};
 
 		struct Data {
-			UINT_8  age;
-			UINT_8  gender;
-			UINT_32 city;
-			UINT_32 uid;
+			unsigned char  age;
+			unsigned char  gender;
+			uint32_t city;
+			uint32_t uid;
 
 #define CGEN_LESS(a,b) \
 			if (a < b ) return true; \
@@ -41,10 +41,10 @@ namespace tut
 		};
 
 		struct Accessor {
-			CDB::Row<UINT_8> age;
-			CDB::Row<UINT_8> gender;
-			CDB::Row<UINT_32> city;
-			CDB::Row<UINT_32> uid;
+			CDB::Row<unsigned char> age;
+			CDB::Row<unsigned char> gender;
+			CDB::Row<uint32_t> city;
+			CDB::Row<uint32_t> uid;
 
 			void push_back(const Data& d) {
 				age.push_back(d.age);
@@ -53,7 +53,7 @@ namespace tut
 				uid.push_back(d.uid);
 			}
 
-			void open(const std::string& fn, CDB::Direction di, UINT_64 columns)
+			void open(const std::string& fn, CDB::Direction di, uint64_t columns)
 			{
 #define CGEN_NAR(field, code) \
 				if (columns & code){ \
@@ -82,7 +82,7 @@ namespace tut
 			}
 
 			// FIXME: remove always-read-uid-column ?
-			size_t read(UINT_64 columns)
+			size_t read(uint64_t columns)
 			{
 #define CGEN_NAR(field, code) \
 				if (columns & code){ \
@@ -104,7 +104,7 @@ namespace tut
 				uid.close();
 			}
 
-			bool eof(UINT_64 columns)
+			bool eof(uint64_t columns)
 			{
 				return uid.eof();
 			}
@@ -129,9 +129,9 @@ namespace tut
 		Util::Index genders;
 		Util::Index cities;
 
-		UINT_64 columns () const
+		uint64_t columns () const
 		{
-			UINT_64 res=0;
+			uint64_t res=0;
 
 			if(!ages.empty()) res |= Root::I_AGE;
 			if(!genders.empty()) res |= Root::I_GENDER;
@@ -158,7 +158,7 @@ namespace tut
 	// class to make a report
 	struct Worker1
 	{
-		UINT_32 calls;
+		uint32_t calls;
 
 		Worker1()
 		: calls(0)
@@ -171,7 +171,7 @@ namespace tut
 		}
 
 		// ask no additional columns
-		UINT_64 columns()
+		uint64_t columns()
 		{
 			return 0;
 		}
@@ -192,11 +192,11 @@ namespace tut
 		// w/o duplicate keys
 
 		Root::Data v;
-		for (INT_8 i=10; i<20; i++) {
+		for (char i=10; i<20; i++) {
 			v.age=i;
-			for(INT_8 j=0; j<3; j++){
+			for(char j=0; j<3; j++){
 				v.gender=j;
-				for(UINT_32 k=100; k<200; k++ ) {
+				for(uint32_t k=100; k<200; k++ ) {
 					v.city=k;
 					v.uid=k;
 					id.insert(v);

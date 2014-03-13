@@ -33,7 +33,7 @@ class Create {
 		explicit Create(const std::string& fn)
 		: counter(0)
 		{
-			ac.open(fn, ROW_WRITE, std::numeric_limits<UINT_64>::max());
+			ac.open(fn, ROW_WRITE, std::numeric_limits<uint64_t>::max());
 		}
 
 		void insert(const RawDataT& data) {

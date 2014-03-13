@@ -2,7 +2,7 @@
 #ifndef _LOG4_HPP__
 #define _LOG4_HPP__
 
-#include <Types.h>
+#include <stdint.h>
 #include <sys/time.h>
 #include <string>
 #include <sstream>

@@ -2,7 +2,7 @@
 #ifndef _CDB_TL_HPP__
 #define _CDB_TL_HPP__
 
-#include <Types.h>
+#include <stdint.h>
 #include <cassert>
 #include <TypeLists.hpp>
 #include <tr1/unordered_set>
@@ -35,11 +35,11 @@ namespace CDB {
 			struct Open {
 				const std::string& fn;
 				CDB::Direction di;
-				const UINT_64 columns;
+				const uint64_t columns;
 				Open(
 					const std::string& fn_,
 					CDB::Direction di_,
-					const UINT_64 columns_ )
+					const uint64_t columns_ )
 				: fn(fn_), di(di_), columns(columns_) {}
 
 				template<class T>
@@ -51,7 +51,7 @@ namespace CDB {
 					}
 				}
 			};
-			void open(const std::string& fn, CDB::Direction di, const UINT_64 columns)
+			void open(const std::string& fn, CDB::Direction di, const uint64_t columns)
 			{
 				Open op(fn, di, columns);
 				tuple_for_each(op, acc);
@@ -86,9 +86,9 @@ namespace CDB {
 			}
 
 			struct Read {
-				const UINT_64 columns;
+				const uint64_t columns;
 				size_t sz;
-				Read(const UINT_64 columns_) : columns(columns_), sz(0) {}
+				Read(const uint64_t columns_) : columns(columns_), sz(0) {}
 
 				template<class T>
 				void operator()(T& t){
@@ -103,7 +103,7 @@ namespace CDB {
 					}
 				}
 			};
-			size_t read(const UINT_64 columns) {
+			size_t read(const uint64_t columns) {
 				Read re(columns);
 				tuple_for_each(re, acc);
 				return re.sz;
@@ -122,9 +122,9 @@ namespace CDB {
 
 			struct IsEof {
 				bool stop;
-				const UINT_64 columns;
+				const uint64_t columns;
 				bool rc;
-				IsEof(const UINT_64 columns_)
+				IsEof(const uint64_t columns_)
 				: stop(false), columns(columns_), rc(false) {}
 
 				template<class T>
@@ -137,7 +137,7 @@ namespace CDB {
 					}
 				}
 			};
-			bool eof(const UINT_64 columns) {
+			bool eof(const uint64_t columns) {
 				IsEof iseof(columns);
 				tuple_for_each(iseof, acc);
 				return iseof.rc;
@@ -154,8 +154,8 @@ namespace CDB {
 			Index index;
 
 			struct FindColumns {
-				UINT_64 counter = 0;
-				UINT_64 rc = 0;
+				uint64_t counter = 0;
+				uint64_t rc = 0;
 				FindColumns() {}
 				template<class T>
 				void operator()(T& t) {
@@ -165,7 +165,7 @@ namespace CDB {
 					counter++;
 				}
 			};
-			UINT_64 columns ()
+			uint64_t columns ()
 			{
 				FindColumns fc;
 				tuple_for_each(fc, index);
@@ -212,7 +212,7 @@ namespace CDB {
 
 #define CDB_COLUMN(NAME, TYPE) \
 	members_before_##NAME; \
-	static const UINT_64 ColumnName_##NAME = 1 << std::tuple_size<members_before_##NAME>::value ; \
+	static const uint64_t ColumnName_##NAME = 1 << std::tuple_size<members_before_##NAME>::value ; \
 	struct NAME##_base { static const char* name() { return "."#NAME; } }; \
 	struct NAME##_row : public CDB::Row<TYPE> { \
 		NAME##_row() : CDB::Row<TYPE>(NAME##_base::name(), ColumnName_##NAME) {} \

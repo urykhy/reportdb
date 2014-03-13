@@ -5,7 +5,7 @@
 #ifndef _USE_MDC_HPP__
 #define _USE_MDC_HPP__
 
-#include <Types.h>
+#include <stdint.h>
 #include <MDCInternal.hpp>
 #include <RaiiMMAP.hpp>
 #include <Index.hpp>
@@ -41,14 +41,14 @@ class UseMDC {
 			}
 		}
 
-		PrimaryKey find_cube(UINT_32 cube)
+		PrimaryKey find_cube(uint32_t cube)
 		{
 			const void* ptr = map_pk.addr();
 			const PrimaryKey* cube_info = static_cast<const PrimaryKey*>(ptr);
 			return cube_info[cube];
 		}
 
-		Key find_key(UINT_32 cube)
+		Key find_key(uint32_t cube)
 		{
 			void* ptr = map_keys.addr();
 			Key* key = static_cast<Key*>(ptr);
@@ -62,7 +62,7 @@ class UseMDC {
 				W& worker,
 				F& filter)
 		{
-			const UCHAR_8* ptr = static_cast<const UCHAR_8*>(map_data.addr());
+			const unsigned char* ptr = static_cast<const unsigned char*>(map_data.addr());
 			ptr += cube_key.offset;
 
 			if (cube_key.size < cube_key.osize)
@@ -71,7 +71,7 @@ class UseMDC {
 				worker(key, filter.decompress(ptr, cube_key.size, cube_key.osize));
 			} else {
 				// normal data
-				const UCHAR_8* end = ptr + cube_key.size;
+				const unsigned char* end = ptr + cube_key.size;
 				while(ptr < end)
 				{
 					const Val* val = static_cast<const Val*>( static_cast<const void*>(ptr) );

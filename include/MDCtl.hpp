@@ -5,7 +5,7 @@
 #ifndef _MDC_TL_HPP__
 #define _MDC_TL_HPP__
 
-#include <Types.h>
+#include <stdint.h>
 #include <set>
 #include <algorithm>
 #include <TypeLists.hpp>
@@ -33,8 +33,8 @@ namespace MDC {
 
 		// functor to insert a value in index
 		struct Inserter {
-			UINT_32 cube;
-			Inserter(UINT_32 cubeIn)
+			uint32_t cube;
+			Inserter(uint32_t cubeIn)
 			: cube(cubeIn) {}
 
 			template<class Key, class Idx>
@@ -96,7 +96,7 @@ namespace MDC {
 		template<class Key, class Idx>
 		struct MakeIndex {
 			Idx index;
-			void insert(Key& key, UINT_32 cube)
+			void insert(Key& key, uint32_t cube)
 			{	// insert a value to index
 				Inserter inserter(cube);
 				tuple_for_each2(inserter, key, index);

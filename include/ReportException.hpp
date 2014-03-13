@@ -5,7 +5,7 @@
 #ifndef _REPORT_EXCEPTION_HPP__
 #define _REPORT_EXCEPTION_HPP__
 
-#include <Types.h>
+#include <stdint.h>
 #include <stdexcept>
 #include <string>
 #include <sstream>

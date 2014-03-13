@@ -22,9 +22,9 @@ namespace tut
 		enum KeyCode {I_AGE, I_GENDER, I_CITY};
 
 		struct Key {
-			UINT_8  age;
-			UINT_8  gender;
-			UINT_32 city;
+			unsigned char  age;
+			unsigned char  gender;
+			uint32_t city;
 
 #define CGEN_LESS(a,b) \
 			if (a < b ) return true; \
@@ -40,14 +40,14 @@ namespace tut
 		};
 
 		// val should be just a INT (upto 32bit width)
-		typedef UINT_32 Val;
+		typedef uint32_t Val;
 
 		struct Index {
-			std::map<INT_8, Util::Index> age_index;
-			std::map<INT_8, Util::Index> gender_index;
-			std::map<UINT_32, Util::Index> city_index;
+			std::map<char, Util::Index> age_index;
+			std::map<char, Util::Index> gender_index;
+			std::map<uint32_t, Util::Index> city_index;
 
-			void insert(const Key& key, UINT_32 cube)
+			void insert(const Key& key, uint32_t cube)
 			{
 				age_index[key.age].set(cube);
 				gender_index[key.gender].set(cube);
@@ -78,8 +78,8 @@ namespace tut
 	};
 
 	struct Narrow2 {
-		static const UINT_8 gender = 0;
-		static const UINT_8 age = 10;
+		static const unsigned char gender = 0;
+		static const unsigned char age = 10;
 
 		bool empty() const
 		{
@@ -107,7 +107,7 @@ namespace tut
 	// class to make a report
 	struct Worker1
 	{
-		UINT_32 calls;
+		uint32_t calls;
 
 		Worker1()
 		: calls(0)
@@ -136,11 +136,11 @@ namespace tut
 		Filter::BitSet filter;
 
 		Data::Key e;
-		for (INT_8 i=10; i<20; i++) {
+		for (char i=10; i<20; i++) {
 			e.age=i;
-			for(INT_8 j=0; j<3; j++){
+			for(char j=0; j<3; j++){
 				e.gender=j;
-				for(UINT_32 k=100; k<200; k++ ) {
+				for(uint32_t k=100; k<200; k++ ) {
 					e.city=k;
 					id[e].push_back(k);
 					id[e].push_back(k+1);
@@ -172,7 +172,7 @@ namespace tut
 	struct Worker2
 	{
 		Util::Index uids;
-		UINT_32 calls;
+		uint32_t calls;
 
 		Worker2()
 		: calls(0)
@@ -203,7 +203,7 @@ namespace tut
 		Filter::BitSet filter;
 
 		Data::Key e;
-		for (INT_8 i=10; i<20; i++) {
+		for (char i=10; i<20; i++) {
 			e.age=1;
 			e.gender=0;
 			e.city=0;
@@ -212,7 +212,7 @@ namespace tut
 		mdc.insert(id, filter);
 		id.clear();
 
-		for (INT_8 i=20; i<40; i++) {
+		for (char i=20; i<40; i++) {
 			e.age=2;
 			e.gender=0;
 			e.city=0;
@@ -238,7 +238,7 @@ namespace tut
 		enum KeyCode {I_CITY};
 
 		struct Key {
-			UINT_32 city;
+			uint32_t city;
 
 			bool operator<(const Key& right) const {
 				return city < right.city;
@@ -246,14 +246,14 @@ namespace tut
 		};
 
 		struct Val {
-			UINT_32 uid;
-			UINT_32 group;
+			uint32_t uid;
+			uint32_t group;
 		};
 
 		struct Index {
-			std::map<UINT_32, Util::Index> city_index;
+			std::map<uint32_t, Util::Index> city_index;
 
-			void insert(const Key& key, UINT_32 cube)
+			void insert(const Key& key, uint32_t cube)
 			{
 				city_index[key.city].set(cube);
 			}
@@ -267,7 +267,7 @@ namespace tut
 	};
 
 	struct Narrow3 {
-		typedef std::set<UINT_32> LimCityT;
+		typedef std::set<uint32_t> LimCityT;
 		LimCityT lim_city;
 		bool empty() const
 		{
@@ -297,7 +297,7 @@ namespace tut
 	struct Worker3
 	{
 		Util::Index uids;
-		UINT_32 calls;
+		uint32_t calls;
 
 		Worker3()
 		: calls(0)
@@ -312,7 +312,7 @@ namespace tut
 		void operator()(const Data3::Key& key, const std::vector<Data3::Val>& val)
 		{
 			calls+=val.size();
-			for (UINT_32 i = 0; i<val.size(); ++i)
+			for (uint32_t i = 0; i<val.size(); ++i)
 			{
 				uids.set(val[i].uid);
 			}
@@ -328,10 +328,10 @@ namespace tut
 		Create<Data3>::RawDataT id;
 		Filter::LZO<Data3::Val> filter;
 
-		for (UINT_32 i=10; i<20; i++) {
+		for (uint32_t i=10; i<20; i++) {
 			Data3::Key e;
 			e.city=i;
-			for (UINT_32 j=9; j<i; j++){
+			for (uint32_t j=9; j<i; j++){
 				Data3::Val v;
 				v.uid = j;
 				v.group = 0;

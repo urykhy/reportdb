@@ -7,9 +7,9 @@ This article is going to teach about CDB (at least going to exam a test/test-cdb
 we define our table:
 {{{
     CDB_BEGIN_TABLE(Root)
-        CDB_COLUMN(age, UINT_8)
-        CDB_COLUMN(city, UINT_32)
-        CDB_COLUMN(uid, UINT_32)
+        CDB_COLUMN(age, unsigned char)
+        CDB_COLUMN(city, uint32_t)
+        CDB_COLUMN(uid, uint32_t)
     CDB_END_TABLE(Root)
 }}}
 
@@ -27,12 +27,12 @@ open CDB base:
 fill it:
 {{{
         Root::Data d;
-        for(UINT_8 age = 10; age < 20; age++)
-            for (UINT_32 city = 100; city < 110; city++)
-            {  
-                UINT_32 lead_uid = city*100 + age * 10;
-                for (UINT_32 uid = 0; uid < 5; uid++)
-                {  
+        for(uint8_t age = 10; age < 20; age++)
+            for (uint32_t city = 100; city < 110; city++)
+            {
+                uint32_t lead_uid = city*100 + age * 10;
+                for (uint32_t uid = 0; uid < 5; uid++)
+                {
                     TL::SetArg(d, age, city, uid + lead_uid);
                     id.insert(d);
                 }
@@ -53,17 +53,17 @@ now we can walk around of our data:
   * Narrow is a class to limit rows from processing by Worker.
 
 
-Worker2 is a 
+Worker2 is a
 {{{
 struct Worker2
     {
-        UINT_32 calls;
+        uint32_t calls;
         Worker2() : calls(0) { ;; }
         void operator()(const Root::Accessor& ac, size_t idx)
         {
             calls++;
         }
-        UINT_64 columns() { return ColumnName_uid; }
+        uint64_t columns() { return ColumnName_uid; }
     };
 }}}
 
@@ -99,10 +99,10 @@ Ok, to start we need to define few data types, which should describe data types 
 === Root::Data ===
 {{{
      struct Data {
-      UINT_8  age;
-      UINT_8  gender;
-      UINT_32 city;
-      UINT_32 uid;
+      uint8_t  age;
+      uint8_t  gender;
+      uint32_t city;
+      uint32_t uid;
 
       #define CGEN_LESS(a,b) \
         if (a < b ) return true; \
@@ -126,15 +126,15 @@ this is simple Root::Data variant, so hold a few fields. Note an `operator<` - w
 
 {{{
     struct Accessor {
-      CDB::Row<UINT_8> age;
-      CDB::Row<UINT_8> gender;
-      CDB::Row<UINT_32> city;
-      CDB::Row<UINT_32> uid;
+      CDB::Row<uint8_t> age;
+      CDB::Row<uint8_t> gender;
+      CDB::Row<uint32_t> city;
+      CDB::Row<uint32_t> uid;
 
       void push_back(const Data& d);
-      void open(const std::string& fn, CDB::Direction di, UINT_64 columns);
+      void open(const std::string& fn, CDB::Direction di, uint64_t columns);
       void write();
-      size_t read(UINT_64 columns);
+      size_t read(uint64_t columns);
       void close();
       bool eof();
     };
@@ -154,7 +154,7 @@ Really, we don't want to pass every row to worker, say we want to run a report f
 
 {{{
 struct Narrow1 {
-    UINT_64 columns () const;
+    uint64_t columns () const;
     bool operator()(const Root::Accessor& ac, size_t rown) const ;
 };
 }}}
@@ -171,14 +171,14 @@ Is a main report class, usually you will need to make a lot of classes, one per 
   struct Worker1
   {
      void operator()(const Root::Accessor& ac, size_t idx)
-     UINT_64 columns()
+     uint64_t columns()
   };
 }}}
 
 Note a columns() method. Worker can ask engine to get specified rows from disk. Every row in this test coded by bit in 64-bit-width unsigned.
 
 
-= Initial fill = 
+= Initial fill =
 
 Now it is a time to load data into db:
 {{{
@@ -195,7 +195,7 @@ we need to fill the id container with Root::Data structures, after end - we can 
 Please note, CDB supports an `append` operation. so it's possible to make a multiple calls to `insert`, or even open the same file multiple times, and append new data.
 
 
-= Run a report = 
+= Run a report =
 
 Ok, we have cdb on disk. Now we going to fetch data and make a report:
 {{{

@@ -5,7 +5,7 @@
 #ifndef _MDC_INTERNAL_HPP__
 #define _MDC_INTERNAL_HPP__
 
-#include <Types.h>
+#include <stdint.h>
 
 namespace MDC {
 	using std::size_t;
@@ -15,13 +15,13 @@ namespace MDC {
 	const char* SUFFIX_KEYS=".keys";
 
 	// minimal size (bytes) to compress in filter
-	const static UINT_32 COMPRESS_MIN = 32;
+	const static uint32_t COMPRESS_MIN = 32;
 
 	struct PrimaryKey
 	{
-		UINT_64 offset;
-		UINT_32 size;   // on disk size
-		UINT_32 osize;  // original data size in bytes(decpmpressed)
+		uint64_t offset;
+		uint32_t size;   // on disk size
+		uint32_t osize;  // original data size in bytes(decpmpressed)
 
 		PrimaryKey() : offset(0), size(0), osize(0)
 		{

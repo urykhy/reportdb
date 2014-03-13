@@ -5,7 +5,7 @@
 #ifndef _USE_CDB_HPP__
 #define _USE_CDB_HPP__
 
-#include <Types.h>
+#include <stdint.h>
 #include <CDBRow.hpp>
 #include <Log4.hpp>
 
@@ -37,7 +37,7 @@ class Use {
 		template<class Narrow, class W>
 		void access(Narrow& narrow, W& worker)
 		{
-			UINT_64 columns = narrow.columns() | worker.columns();
+			uint64_t columns = narrow.columns() | worker.columns();
 			ac.open(filename, ROW_READ, columns);
 
 			LOG4_DEBUG(filename << ": read columns " << columns);

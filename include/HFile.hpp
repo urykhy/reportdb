@@ -5,7 +5,7 @@
 #ifndef _H_File_HPP__
 #define _H_File_HPP__
 
-#include <Types.h>
+#include <stdint.h>
 #include <ReportException.hpp>
 
 #include <sys/types.h>

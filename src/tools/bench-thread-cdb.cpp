@@ -15,13 +15,13 @@
 #include <boost/program_options.hpp>
 namespace po = boost::program_options;
 
-static const UINT_32 MAX_ROWS=10000000; // 10M
+static const uint32_t MAX_ROWS=10000000; // 10M
 
 	// define a Table
 	CDB_BEGIN_TABLE(Root)
-		CDB_COLUMN(gender, UINT_8)
-		CDB_COLUMN(uid, UINT_32)
-		CDB_COLUMN(slot, UINT_32)
+		CDB_COLUMN(gender, unsigned char)
+		CDB_COLUMN(uid, uint32_t)
+		CDB_COLUMN(slot, uint32_t)
 	CDB_END_TABLE(Root)
 
 #define MAX_GENDER 3
@@ -30,7 +30,7 @@ static const UINT_32 MAX_ROWS=10000000; // 10M
 // class to make a report
 struct Worker1
 {
-	UINT_32 calls;
+	uint32_t calls;
 	Util::Index uid[MAX_GENDER];
 
 	Worker1()
@@ -40,15 +40,15 @@ struct Worker1
 	}
 	void operator()(const Root::Accessor& ac, size_t rown)
 	{
-		UINT_8 gender_ = std::get<0>(ac.acc).get(rown); //CDB::TL::get<0>(ac.acc).get(rown);
-		UINT_32 uid_ = std::get<1>(ac.acc).get(rown); //CDB::TL::get<1>(ac.acc).get(rown);
+		unsigned char gender_ = std::get<0>(ac.acc).get(rown); //CDB::TL::get<0>(ac.acc).get(rown);
+		uint32_t uid_ = std::get<1>(ac.acc).get(rown); //CDB::TL::get<1>(ac.acc).get(rown);
 		// count uid's per gender
 		uid[ gender_ ].set( uid_ );
 		calls++;
 	}
 
 	// ask no additional columns
-	UINT_64 columns()
+	uint64_t columns()
 	{
 		return ColumnName_uid | ColumnName_gender;
 	}
@@ -101,9 +101,9 @@ struct Generate {
 		while( i < MAX_ROWS)
 		{
 			size_t cur = seq();
-			UINT_8 gender = cur % MAX_GENDER; // only 0,1,2
-			UINT_32 uid = cur % MAX_ROWS;
-			UINT_32 slot = cur % MAX_SLOTS;
+			unsigned char gender = cur % MAX_GENDER; // only 0,1,2
+			uint32_t uid = cur % MAX_ROWS;
+			uint32_t slot = cur % MAX_SLOTS;
 
 			v = std::tie(gender, uid, slot);
 			//CDB::TL::SetArg(v, gender, uid, slot);
@@ -117,11 +117,11 @@ struct Generate {
 		LOG4_INFO("Generation done (" << i << "/" << i_all << ")" );
 
 		/*
-		for (UINT_8 gender = 0;
+		for (unsigned char gender = 0;
 			 gender < MAX_GENDER;
 			 ++gender)
 		{
-			for (UINT_32 uid = gender; uid < MAX_ROWS; uid += MAX_GENDER)
+			for (uint32_t uid = gender; uid < MAX_ROWS; uid += MAX_GENDER)
 			{
 				CDB::TL::SetArg(v, gender, uid);
 				id.insert(v);
@@ -134,7 +134,7 @@ struct Generate {
 };
 
 struct Bench {
-	UINT_32 calls;
+	uint32_t calls;
 	double worktime;
 	double jointime;
 	Util::Index uid[MAX_GENDER];
@@ -225,7 +225,7 @@ int main(int argc, char** argv)
 
 		Util::pipeline(fl, bench);
 
-		W_FLOAT ela = total_time.get();
+		double ela = total_time.get();
 		std::cout << "Results: " << bench.calls << " in " << ela << "; "
 			<< bench.calls/ela << " calls per second" << std::endl;
 		std::cout << "Work: " << bench.worktime

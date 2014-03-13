@@ -5,7 +5,7 @@
 #ifndef _CREATE_MDC_HPP__
 #define _CREATE_MDC_HPP__
 
-#include <Types.h>
+#include <stdint.h>
 #include <map>
 #include <vector>
 
@@ -30,7 +30,7 @@ class Create {
 		PKT pk;
 
 		const std::string& filename;
-		UINT_64 currentPos;
+		uint64_t currentPos;
 		ssize_t counter;
 		ssize_t pak_counter;
 		Util::HFile data_writer;
@@ -45,7 +45,7 @@ class Create {
 		// obuf - original data
 		template<class T>
 		void add_cube(const MemoryBuf cbuf, const T& obuf) {
-			UINT_32 osize = obuf.size() * sizeof(typename T::value_type);
+			uint32_t osize = obuf.size() * sizeof(typename T::value_type);
 
 			if (cbuf.second < osize) {
 				add_cube_pk(cbuf, osize);
@@ -55,7 +55,7 @@ class Create {
 			}
 		}
 
-		void add_cube_pk(const MemoryBuf buf, UINT_32 osize=0) {
+		void add_cube_pk(const MemoryBuf buf, uint32_t osize=0) {
 			PrimaryKey k;
 			k.offset = currentPos;
 			k.size = buf.second;
@@ -118,7 +118,7 @@ class Create {
 			{
 				keys.push_back(i->first);
 
-				UINT_32 bs = i->second.size() * sizeof(typename CubeData::Val);
+				uint32_t bs = i->second.size() * sizeof(typename CubeData::Val);
 
 				if (filter.can_compress(bs)){
 					add_cube(filter.compress(i->second), i->second);

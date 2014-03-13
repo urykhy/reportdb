@@ -5,7 +5,7 @@
 #ifndef _AR_SNAPPY_HPP__
 #define _AR_SNAPPY_HPP__
 
-#include <Types.h>
+#include <stdint.h>
 #include <ReportException.hpp>
 #include <vector>
 

@@ -5,7 +5,7 @@
 #ifndef _UTIL_INDEX_HPP__
 #define _UTIL_INDEX_HPP__
 
-#include <Types.h>
+#include <stdint.h>
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
@@ -40,17 +40,17 @@ class Index
 		{
 		}
 
-		void set(UINT_32 val)
+		void set(uint32_t val)
 		{
 			buf.set_bit(val);
 		}
 
-		bool get(UINT_32 val) const
+		bool get(uint32_t val) const
 		{
 			return buf.get_bit(val);
 		}
 
-		void set_range(UINT_32 left, UINT_32 right)
+		void set_range(uint32_t left, uint32_t right)
 		{
 			buf.set_range(left, right);
 		}
@@ -90,7 +90,7 @@ class Index
 
 		void join(const void* raw)
 		{
-			bm::deserialize(buf, static_cast<const UCHAR_8*>(raw));
+			bm::deserialize(buf, static_cast<const unsigned char*>(raw));
 		}
 
 		void join(const Index& i)
@@ -98,7 +98,7 @@ class Index
 			buf |= i.buf;
 		}
 
-		void serialize(std::vector<UCHAR_8>& res)
+		void serialize(std::vector<unsigned char>& res)
 		{
 			buf.optimize();
 			BufT::statistics stats;

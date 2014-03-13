@@ -15,7 +15,7 @@ namespace Filter {
 
 // MDC filters here
 // since we want different compression methods
-// so we provide a bitset compression for UINT_32 and less
+// so we provide a bitset compression for uint32_t and less
 // and LZO compression for more complex types
 //
 // user can write own compression classes.
@@ -26,21 +26,21 @@ class BitSet {
 		BitSet(const BitSet&);
 		BitSet& operator=( const BitSet&);
 
-		const UINT_32 min_size;
+		const uint32_t min_size;
 		Util::Index tmp_bitset;
-		std::vector<UCHAR_8> s_buffer;
+		std::vector<unsigned char> s_buffer;
 		Util::Index bs;
 
 	public:
 
-		BitSet (UINT_32 min_size_in = COMPRESS_MIN)
+		BitSet (uint32_t min_size_in = COMPRESS_MIN)
 			: min_size(min_size_in)
 		{
 			;;
 		}
 
 		// check if block should be compressed
-		bool can_compress(UINT_32 size) const
+		bool can_compress(uint32_t size) const
 		{
 			return size >= min_size;
 		}
@@ -62,7 +62,7 @@ class BitSet {
 		}
 
 		const Util::Index&
-		decompress(const void* raw, UINT_32 /*size*/, UINT_32 /*osize*/)
+		decompress(const void* raw, uint32_t /*size*/, uint32_t /*osize*/)
 		{
 			bs.clear();
 			bs.join(raw);
@@ -80,21 +80,21 @@ class LZO {
 		LZO(const LZO&);
 		LZO& operator=( const LZO&);
 
-		const UINT_32 min_size;
+		const uint32_t min_size;
 		Util::ArLZO ar;
-		std::vector<UCHAR_8> s_buffer;
+		std::vector<unsigned char> s_buffer;
 		BufferT res;
 
 	public:
 
-		LZO(UINT_32 min_size_in = COMPRESS_MIN)
+		LZO(uint32_t min_size_in = COMPRESS_MIN)
 		: min_size(min_size_in)
 		{
 			;;
 		}
 
 		// check if block should be compressed
-		bool can_compress(UINT_32 size) const
+		bool can_compress(uint32_t size) const
 		{
 			return size >= min_size;
 		}
@@ -107,7 +107,7 @@ class LZO {
 		}
 
 		const BufferT&
-		decompress(const void* raw, UINT_32 size, UINT_32 osize)
+		decompress(const void* raw, uint32_t size, uint32_t osize)
 		{
 			assert (osize % sizeof(T) == 0);
 			//FIXME: throw an exception if data error ?

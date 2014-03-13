@@ -5,7 +5,7 @@
 #ifndef _AR_LZO_HPP__
 #define _AR_LZO_HPP__
 
-#include <Types.h>
+#include <stdint.h>
 #include <ReportException.hpp>
 #include <vector>
 
@@ -19,10 +19,10 @@ class ArLZO {
 		ArLZO(const ArLZO&);
 		ArLZO& operator=( const ArLZO&);
 
-		std::vector<UCHAR_8> lzoTemp;
+		std::vector<unsigned char> lzoTemp;
 
 	public:
-		typedef std::vector<UCHAR_8> BufferT;
+		typedef std::vector<unsigned char> BufferT;
 
 		explicit ArLZO() : lzoTemp(LZO1X_999_MEM_COMPRESS){
 			;;
@@ -41,7 +41,7 @@ class ArLZO {
 			// allocate as much memory as we need
 			out.resize(outLen);
 
-			INT_32 r = lzo1x_999_compress(
+			int32_t r = lzo1x_999_compress(
 				reinterpret_cast<const lzo_bytep>(&data.front()),
 				countBS,
 				&out.front(),
@@ -61,7 +61,7 @@ class ArLZO {
 		void Decompress(const lzo_bytep data, size_t size, std::vector<T>& out)
 		{
 			lzo_uint countBsLZO=size*sizeof(T);
-			INT_32 r = lzo1x_decompress(
+			int32_t r = lzo1x_decompress(
 				data,
 				size,
 				reinterpret_cast<lzo_bytep>(&out.front()),

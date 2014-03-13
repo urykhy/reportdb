@@ -5,7 +5,7 @@
 #ifndef _RAII_MMAP_HPP__
 #define _RAII_MMAP_HPP__
 
-#include <Types.h>
+#include <stdint.h>
 #include <ReportException.hpp>
 
 #include <sys/mman.h>

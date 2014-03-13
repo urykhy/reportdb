@@ -25,13 +25,13 @@ namespace tut
 	//
 	// MDC/TL interface test
 	//
-	typedef std::tuple<UINT_32, UINT_32, UINT_32> mdc_Key;
-	typedef UINT_32 mdc_Val;
+	typedef std::tuple<uint32_t, uint32_t, uint32_t> mdc_Key;
+	typedef uint32_t mdc_Val;
 	typedef Client<mdc_Key, mdc_Val> Data;
 
 	struct Worker1
 	{
-		UINT_32 calls;
+		uint32_t calls;
 
 		Worker1()
 		: calls(0) { }
@@ -61,9 +61,9 @@ namespace tut
 
 		// fill with data
 		Data::Key e;
-		for (INT_8 i=10; i<20; i++) {
+		for (char i=10; i<20; i++) {
 			e = TL::ctie(i, 1, 1);
-			for(UINT_32 k=0; k<5; k++ ) {
+			for(uint32_t k=0; k<5; k++ ) {
 				id[e].push_back(k*100+1);     // value
 			}
 		}
@@ -107,14 +107,14 @@ namespace tut
 	// CDB/TL interface test
 	//
 	CDB_BEGIN_TABLE(Root)
-		CDB_COLUMN(age, UINT_8)
-		CDB_COLUMN(city, UINT_32)
-		CDB_COLUMN(uid, UINT_32)
+		CDB_COLUMN(age, unsigned char)
+		CDB_COLUMN(city, uint32_t)
+		CDB_COLUMN(uid, uint32_t)
 	CDB_END_TABLE(Root)
 
 	struct Worker2
 	{
-		UINT_32 calls;
+		uint32_t calls;
 
 		Worker2()
 		: calls(0)
@@ -127,7 +127,7 @@ namespace tut
 			calls++;
 		}
 
-		UINT_64 columns()
+		uint64_t columns()
 		{
 			return ColumnName_uid;
 		}
@@ -143,11 +143,11 @@ namespace tut
 		CDB::Create<Root>::RawDataT id;
 
 		Root::Data d;
-		for(UINT_8 age = 10; age < 20; age++)
-			for (UINT_32 city = 100; city < 110; city++)
+		for(unsigned char age = 10; age < 20; age++)
+			for (uint32_t city = 100; city < 110; city++)
 			{
-				UINT_32 lead_uid = city*100 + age * 10;
-				for (UINT_32 uid = 0; uid < 5; uid++)
+				uint32_t lead_uid = city*100 + age * 10;
+				for (uint32_t uid = 0; uid < 5; uid++)
 				{
 					d = TL::ctie(age, city, uid + lead_uid);
 					id.insert(d);

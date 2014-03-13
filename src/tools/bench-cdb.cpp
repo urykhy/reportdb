@@ -12,8 +12,8 @@ struct Root {
 	enum KeyCode { I_GENDER = 1 << 1 };
 
 	struct Data {
-		UINT_8  gender;
-		UINT_32 uid;
+		unsigned char  gender;
+		uint32_t uid;
 
 #define CGEN_LESS(a,b) \
 		if (a < b ) return true; \
@@ -28,15 +28,15 @@ struct Root {
 	};
 
 	struct Accessor {
-		CDB::Row<UINT_8> gender;
-		CDB::Row<UINT_32> uid;
+		CDB::Row<unsigned char> gender;
+		CDB::Row<uint32_t> uid;
 
 		void push_back(const Data& d) {
 			gender.push_back(d.gender);
 			uid.push_back(d.uid);
 		}
 
-		void open(const std::string& fn, CDB::Direction di, UINT_64 columns)
+		void open(const std::string& fn, CDB::Direction di, uint64_t columns)
 		{
 			// XXX: we ignore columsn here, this is a test
 			gender.open(fn, di);
@@ -55,7 +55,7 @@ struct Root {
 			uid.write();
 		}
 
-		size_t read(UINT_64 columns)
+		size_t read(uint64_t columns)
 		{
 			gender.read();
 			return uid.read();
@@ -67,7 +67,7 @@ struct Root {
 			uid.close();
 		}
 
-		bool eof(UINT_64 columns)
+		bool eof(uint64_t columns)
 		{
 			return uid.eof();
 		}
@@ -85,7 +85,7 @@ struct Root {
 // conditional report
 struct Narrow1 {
 
-	UINT_64 columns () const
+	uint64_t columns () const
 	{
 		return 0;
 	}
@@ -98,7 +98,7 @@ struct Narrow1 {
 // class to make a report
 struct Worker1
 {
-	UINT_32 calls;
+	uint32_t calls;
 
 	Worker1()
 	: calls(0)
@@ -111,7 +111,7 @@ struct Worker1
 	}
 
 	// ask no additional columns
-	UINT_64 columns()
+	uint64_t columns()
 	{
 		return 0;
 	}
@@ -129,7 +129,7 @@ void generate(){
 	// id should be sorted
 	// w/o duplicate keys
 
-	const UINT_32 MAX_ROWS=10000000; // 10M
+	const uint32_t MAX_ROWS=10000000; // 10M
 
 	std::cout << "Generating: please wait..." << std::endl;
 
@@ -139,7 +139,7 @@ void generate(){
 		 v.gender < 3;
 		 ++v.gender)
 	{
-		for (UINT_32 uid=0; uid<MAX_ROWS/3.0; uid++)
+		for (uint32_t uid=0; uid<MAX_ROWS/3.0; uid++)
 		{
 			v.uid = uid;
 			id.insert(v);
@@ -162,7 +162,7 @@ void bench(){
 	uc.access(narrow, worker1);
 
 	gettimeofday(&stop, NULL);
-	W_FLOAT ela=( (double)stop.tv_sec + (double)stop.tv_usec/1000000.0f )-
+	double ela=( (double)stop.tv_sec + (double)stop.tv_usec/1000000.0f )-
 		( (double)start.tv_sec + (double)start.tv_usec/1000000.0f );
 
 	std::cout << "Results: " << worker1.calls << " in " << ela << "; "

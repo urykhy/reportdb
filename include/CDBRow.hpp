@@ -5,7 +5,7 @@
 #ifndef _CDB_ROW_HPP__
 #define _CDB_ROW_HPP__
 
-#include <Types.h>
+#include <stdint.h>
 #include <Log4.hpp>
 #include <ArLZO.hpp>
 //#include <ArLZ4.hpp>
@@ -30,7 +30,7 @@ class Row {
 		Util::SyncWriteFile disk;
 		//Util::HFile disk;
 		const std::string suffix;
-		const UINT_64 id;
+		const uint64_t id;
 
 		AR lzo;
 		typedef typename AR::BufferT ArBufferT;
@@ -39,12 +39,12 @@ class Row {
 	public:
 		typedef T value_type;
 
-		explicit Row(const std::string& suffixIn, UINT_64 idIn)
+		explicit Row(const std::string& suffixIn, uint64_t idIn)
 		: suffix(suffixIn), id(idIn)
 		{
 		}
 
-		UINT_64 get_column() const {
+		uint64_t get_column() const {
 			return id;
 		}
 
