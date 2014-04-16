@@ -30,7 +30,7 @@ Every MDC is a 3 files on disk.
 data-file is just a sequence of serialized-data. to access we need a offset and size (stored in index)
 
 *primary key*
-is a file in form of  [[offset][size]][...]...
+is a file in form of  |offset|size|
 
   * offset - serialized-data offset in file
   * size - size of serialized-data
@@ -38,16 +38,16 @@ is a file in form of  [[offset][size]][...]...
 so for 10th custer - we need 10th entry in pk file.
 
 *keys*
-file in form:  [[key]][...]...
+file in form:  |key|
 * key - is a user defined key. key with number 1 corresponds to 1st entry in PK(primary index) file, and first cluster in data file.
 
-*sample*
+== Sample ==
 
 say we have a large data set, and 2 indexes (age, gender)
 We can split large-data-set to multiple small (say clusters), and write cluster by cluster to disk (this is data file).
 As incoming data is stored in std::map - clusters on disk will be sorted (as keys in map)
 
-[gender=0, age=0][gender=0, age=1]....[gender=0, age=99][gender=1, age=0]...
+|gender=0, age=0|gender=0, age=1|...|gender=0, age=99|gender=1, age=0|...|
 
 Ok,
 how this working:

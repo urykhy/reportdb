@@ -21,7 +21,7 @@ caching: since data compressed - we can't waste RAM with uncompressed data, VFS 
 == Column internals ==
 
 On disk every data file is a sequence of blocks:
-[[element#][size][data]]+
+|element#|size|data|
 
 where:
   * element# - is a number of compressed elements.
