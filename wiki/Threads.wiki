@@ -4,19 +4,17 @@
 
 ReportDB can be used with intel TBB library, to use multiple cores in modern CPU's.
 
-= How to use it? = 
+= How to use it? =
 
 ===define main report class===
-
-{{{
+```
 struct Bench {
  typedef .... TmpResult;
  void work(const std::string& fname, TmpResult& tr)
  void join(const std::string& fname, TmpResult& tr)
 }
-}}}
-
-TmpResult - is a typedef to store a results of one file handling, 
+```
+TmpResult - is a typedef to store a results of one file handling,
 say if you count number of rows in file - this can a _int_ and so on.
 
 _*work*_
@@ -32,18 +30,18 @@ _*join*_
 ===call report processing with tbb===
 
 Init tbb sheduler with number of threads required (or use -1 for autodetection, in new version of tbb this is optional)
- {{{
+ ```
  tbb::task_scheduler_init init(opt_thr_count);
- }}}
+ ```
 
 Now we can run a report:
   * fl - container with filenames to process (or any other data identifiers)
   * bench - is a Bench instance to use.
 
-{{{  
+```
 Util::pipeline(fl, bench);
-}}}
- 
+```
+
 ==Performance==
 
 This is bench results of bench-thread-cdb over 10 files on 4-way xeon box, RHEL 5.4.

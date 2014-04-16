@@ -1,13 +1,13 @@
 == Dependencies ==
 
 on debian (on other distributions package names may vary)
-  * cmake 
-  * libtbb-dev 
-  * liblzo2-dev 
+  * cmake
+  * libtbb-dev
+  * liblzo2-dev
   * bmagic
   * mudflap can be used to debug (http://gcc.gnu.org/wiki/Mudflap_Pointer_Debugging) via -DWITH_MUDFLAP=1 at cmake time. Requires libmudflap0-XX-dev. *MUDFLAP_OPTIONS="-heur-proc-map"* can be used to avoid false positives (at least 4.3.4-6 gcc in debian)
   * libtut-dev for unittests
 
-compiler with variadic-templates support required for TL interfaces (g++)
+c++11 compiler with variadic-templates support required for TL interfaces (g++)
 
-  
+

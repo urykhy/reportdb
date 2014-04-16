@@ -27,42 +27,27 @@ Every MDC is a 3 files on disk.
   * pk - primary key - used access .data file
   * keys - top level key to allow indexed access
 
-*data*
-{{{
- [data][...][...
-}}}
-
-is a sequence of serialized-data. to access we need a offset and size (stored in index)
+data-file is just a sequence of serialized-data. to access we need a offset and size (stored in index)
 
 *primary key*
-{{{
- [[offset][size]][...][...
-}}}
+is a file in form of  [[offset][size]][...]...
+
   * offset - serialized-data offset in file
   * size - size of serialized-data
 
 so for 10th custer - we need 10th entry in pk file.
 
 *keys*
-{{{
- [[key]][...][...
-}}}
-   * key - is a user defined key. key with number 1 corresponds to 1st entry in PK file, and first cluster in data file.
+file in form:  [[key]][...]...
+* key - is a user defined key. key with number 1 corresponds to 1st entry in PK(primary index) file, and first cluster in data file.
 
-*images*
+*sample*
 
 say we have a large data set, and 2 indexes (age, gender)
-
-
-http://keep4u.ru/imgs/b/2009/10/15/e2/e2f55730e09461255798890caf597446.jpg
-
 We can split large-data-set to multiple small (say clusters), and write cluster by cluster to disk (this is data file).
-
 As incoming data is stored in std::map - clusters on disk will be sorted (as keys in map)
 
-{{{
 [gender=0, age=0][gender=0, age=1]....[gender=0, age=99][gender=1, age=0]...
-}}}
 
 Ok,
 how this working:
@@ -75,4 +60,4 @@ how this working:
     * get offset and size from PK
     * read compressed data and decompress
     * pass data with key information to report-generator.
-  
+
