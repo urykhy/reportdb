@@ -8,7 +8,7 @@
 #include <stdint.h>
 #include <Log4.hpp>
 #include <ArLZO.hpp>
-//#include <ArLZ4.hpp>
+//#include <ArZip.hpp>
 
 #include <SyncWriteFile.hpp>
 #include <stdlib.h>
