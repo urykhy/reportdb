@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.6)
 
 SET(SEARCHIN lzo bm tbb)
 SET(HDRS task_scheduler_init.h lzo1x.h bm.h boost/program_options.hpp)
-SET(LLIB tbb z lzo2 boost_program_options)
+SET(LLIB tbb lzo2 boost_program_options)
 INCLUDE(./Generic.cmake)
 PROJECT(ReportDB)
 
@@ -26,6 +26,7 @@ GEN_ADD_TEST(test-mdc test/test-mdc.cpp "reportDB")
 GEN_ADD_TEST(test-cdb test/test-cdb.cpp "reportDB")
 GEN_ADD_TEST(test-tl test/test-tl.cpp "reportDB")
 GEN_ADD_TEST(test-bfile test/test-bfile.cpp "reportDB")
+GEN_ADD_TEST(test-z test/test-z.cpp "z")
 
 ADD_EXECUTABLE(bench-cdb src/tools/bench-cdb.cpp )
 TARGET_LINK_LIBRARIES(bench-cdb reportDB)
