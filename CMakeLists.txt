@@ -26,7 +26,6 @@ GEN_ADD_TEST(test-mdc test/test-mdc.cpp "reportDB")
 GEN_ADD_TEST(test-cdb test/test-cdb.cpp "reportDB")
 GEN_ADD_TEST(test-tl test/test-tl.cpp "reportDB")
 GEN_ADD_TEST(test-bfile test/test-bfile.cpp "reportDB")
-GEN_ADD_TEST(test-z test/test-z.cpp "z")
 
 ADD_EXECUTABLE(bench-cdb src/tools/bench-cdb.cpp )
 TARGET_LINK_LIBRARIES(bench-cdb reportDB)
