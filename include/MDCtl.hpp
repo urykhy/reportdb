@@ -43,7 +43,7 @@ namespace MDC {
 			}
 
 			template<class N>
-			void lookup(Util::Index& cubes, N& narrow)
+			void lookup(Util::Index& cubes, const N& narrow)
 			{	// find clusters's we going to process
 
 				tuple_for_each2([&cubes](auto& index, auto& limit) mutable
