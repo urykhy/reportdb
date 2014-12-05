@@ -31,105 +31,55 @@ namespace MDC {
 			typedef std::tr1::unordered_set<T> Result;
 		};
 
-		// functor to insert a value in index
-		struct Inserter {
-			uint32_t cube;
-			Inserter(uint32_t cubeIn)
-			: cube(cubeIn) {}
-
-			template<class Key, class Idx>
-			void operator()(Key& key, Idx& idx) {
-				idx[key].set(cube);
-			}
-		};
-
-		// apply a narrow limit's to cubes
-		struct Narrower {
-			Util::Index& cubes;
-			Narrower(Util::Index& cubesIn)
-			: cubes(cubesIn) {}
-
-			template<class IndexT, class LimitT>
-			void operator()(IndexT& index, LimitT& limit) {
-				// collect via OR cube-ids in tmp
-				// and then join via AND
-
-				if (limit.size()) {	// handle only if we have limits here
-					Util::Index tmp;
-					// walk over limit values
-					for(auto i=limit.begin();
-							 i != limit.end();
-							++i)
-					{ // ask index for every val in limit
-						auto j = index.find(*i);
-						if (j != index.end()){
-							// join cube indexes
-							tmp.join(j->second);
-						}
-					}
-					cubes.index_join(tmp);
-				}
-			}
-		};
-
-		struct MemUsageCounter
-		{
-			size_t counter;
-			MemUsageCounter()
-			: counter(0)
-			{
-			}
-
-			template<class T>
-			void operator()(T& t)
-			{
-				for(auto i = t.begin();
-						 i != t.end();
-						 ++i)
-				{
-					counter += i->second.mem_used();
-				}
-			}
-		};
-
 		// generate main Index structure
 		template<class Key, class Idx>
 		struct MakeIndex {
 			Idx index;
 			void insert(Key& key, uint32_t cube)
 			{	// insert a value to index
-				Inserter inserter(cube);
-				tuple_for_each2(inserter, key, index);
+				tuple_for_each2([&cube](auto& key, auto& idx){
+					idx[key].set(cube);
+				}, key, index);
 			}
+
 			template<class N>
 			void lookup(Util::Index& cubes, N& narrow)
 			{	// find clusters's we going to process
-				Narrower na(cubes);
-				tuple_for_each2(na, index, narrow.limit);
+
+				tuple_for_each2([&cubes](auto& index, auto& limit) mutable
+				{
+					// collect via OR cube-ids in tmp
+					// and then join via AND
+					if (limit.size()) {	// handle only if we have limits here
+						Util::Index tmp;
+						// walk over limit values
+						for(auto i=limit.begin();
+								 i != limit.end();
+								++i)
+						{ // ask index for every val in limit
+							auto j = index.find(*i);
+							if (j != index.end()){
+								// join cube indexes
+								tmp.join(j->second);
+							}
+						}
+						cubes.index_join(tmp);
+					}
+				}, index, narrow.limit);
 			}
+
 			size_t mem_used()
 			{	// return index size (bitset only)
-				MemUsageCounter muc;
-				tuple_for_each(muc, index);
-				return muc.counter;
-			}
-		};
-
-		// functor to check if narrow if empty
-		struct CheckIfEmpty
-		{
-			bool empty;
-			CheckIfEmpty()
-			: empty(true)
-			{
-			}
-
-			template<class Limit>
-			void operator()(Limit& lim)
-			{
-				if (!lim.empty()){
-					empty = false;
-				}
+				size_t counter = 0;
+				tuple_for_each([&counter](auto& t) mutable {
+					for(auto i = t.begin();
+							 i != t.end();
+							 ++i)
+					{
+						counter += i->second.mem_used();
+					}
+				}, index);
+				return counter;
 			}
 		};
 
@@ -141,9 +91,13 @@ namespace MDC {
 			LimitT limit;
 			bool empty()
 			{
-				CheckIfEmpty ce;
-				tuple_for_each(ce, limit);
-				return ce.empty;
+				bool empty = true;
+				tuple_for_each([&empty](auto& lim) mutable {
+					if (!lim.empty()){
+						empty = false;
+					}
+				}, limit);
+				return empty;
 			}
 		};
 

@@ -20,127 +20,60 @@ namespace CDB {
 		struct Accessor {
 			Acc acc;
 
-			struct Push {
-				template<class T, class D>
-				void operator()(T& t, D& d){
-					t.push_back(d);
-				}
-			};
 			template<class Data>
 			void push_back(const Data& d) {
-				Push push;
-				tuple_for_each2(push, acc, d);
+				tuple_for_each2([](auto& t, auto& d){ t.push_back(d); }, acc, d);
 			}
 
-			struct Open {
-				const std::string& fn;
-				CDB::Direction di;
-				const uint64_t columns;
-				Open(
-					const std::string& fn_,
-					CDB::Direction di_,
-					const uint64_t columns_ )
-				: fn(fn_), di(di_), columns(columns_) {}
-
-				template<class T>
-				void operator()(T& t)
-				{
-					if (t.get_column() & columns) {
-						//std::cout << "open for [" << t.name() << "]" << std::endl;
-						t.open(fn, di);
-					}
-				}
-			};
 			void open(const std::string& fn, CDB::Direction di, const uint64_t columns)
 			{
-				Open op(fn, di, columns);
-				tuple_for_each(op, acc);
+				tuple_for_each([&fn,&di,&columns](auto& t) mutable {
+					if (t.get_column() & columns) {
+						t.open(fn, di);
+					}
+				}, acc);
 			}
-
-			struct Reserve {
-				const size_t s;
-				Reserve(size_t s_) : s(s_) {}
-				template<class T>
-				void operator()(T& t)
-				{
-					t.reserve(s);
-				}
-			};
 
 			void reserve(size_t s)
 			{
-				Reserve op_res(s);
-				tuple_for_each(op_res, acc);
+				tuple_for_each([&s](auto& t){ t.reserve(s); }, acc);
 			}
 
-			struct Write {
-				template<class T>
-				void operator()(T& t)
-				{
-					t.write();
-				}
-			};
 			void write() {
-				Write wr;
-				tuple_for_each(wr, acc);
+				tuple_for_each([](auto& t){ t.write(); }, acc);
 			}
 
-			struct Read {
-				const uint64_t columns;
-				size_t sz;
-				Read(const uint64_t columns_) : columns(columns_), sz(0) {}
-
-				template<class T>
-				void operator()(T& t){
+			size_t read(const uint64_t columns) {
+				size_t sz = 0;
+				tuple_for_each([&columns,&sz](auto& t) mutable {
 					if (t.get_column() & columns) {
 						size_t rc = t.read();
 						if (!sz) {
 							sz = rc;
 						} else {
-							// FIXME: wrong data
-							assert(sz == rc);
+							assert(sz == rc); // FIXME: wrong data
 						}
 					}
-				}
-			};
-			size_t read(const uint64_t columns) {
-				Read re(columns);
-				tuple_for_each(re, acc);
-				return re.sz;
+				}, acc);
+				return sz;
 			}
 
-			struct Close {
-				template<class T>
-				void operator()(T& t) {
-					t.close();
-				}
-			};
 			void close() {
-				Close cl;
-				tuple_for_each(cl, acc);
+				tuple_for_each([](auto& t){ t.close(); }, acc);
 			}
 
-			struct IsEof {
-				bool stop;
-				const uint64_t columns;
-				bool rc;
-				IsEof(const uint64_t columns_)
-				: stop(false), columns(columns_), rc(false) {}
+			bool eof(const uint64_t columns) {
+				bool stop = false;
+				bool rc = false;
 
-				template<class T>
-				void operator()(T& t)
-				{
+				tuple_for_each([&stop,&rc,&columns](auto& t) mutable {
 					if (!stop && t.get_column() & columns) {
 						//std::cout << "eof for [" << t.name() << "]" << std::endl;
 						rc = t.eof();
 						stop = true;
 					}
-				}
-			};
-			bool eof(const uint64_t columns) {
-				IsEof iseof(columns);
-				tuple_for_each(iseof, acc);
-				return iseof.rc;
+				}, acc);
+				return rc;
 			}
 		};
 
@@ -153,46 +86,31 @@ namespace CDB {
 		struct Narrow {
 			Index index;
 
-			struct FindColumns {
+			uint64_t columns ()
+			{
 				uint64_t counter = 0;
 				uint64_t rc = 0;
-				FindColumns() {}
-				template<class T>
-				void operator()(T& t) {
+
+				tuple_for_each([&counter,&rc](auto& t) mutable {
 					if (!t.empty()) {
 						rc |= 1 << counter;
 					}
 					counter++;
-				}
-			};
-			uint64_t columns ()
-			{
-				FindColumns fc;
-				tuple_for_each(fc, index);
-				return fc.rc;
+				}, index);
+				return rc;
 			}
 
-			struct CheckIndex
+			bool operator()(Acc& ac, const size_t rown)
 			{
-				bool rc;
-				const size_t rown;
-				CheckIndex(const size_t rown_) : rc(true), rown(rown_) {}
-
-				template<class T, class V>
-				void operator()(T& t, V& v)
-				{
+				bool rc = true;
+				tuple_for_each2([&rc,&rown](auto& t, auto& v){
 					if (rc && !t.empty()) {
 						if (t.find(v.get(rown)) == t.end()) {
 							rc = false;
 						}
 					}
-				}
-			};
-			bool operator()(Acc& ac, const size_t rown)
-			{
-				CheckIndex cindex(rown);
-				tuple_for_each2(cindex, index, ac.acc);
-				return cindex.rc;
+				}, index, ac.acc);
+				return rc;
 			}
 		};
 

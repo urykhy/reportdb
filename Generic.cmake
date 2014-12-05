@@ -30,7 +30,7 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-parameter " )
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-default-inline " )
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -D_THREAD_SAFE -pipe" )
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_GNU_SOURCE" )
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -g -ggdb" )
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -g -ggdb" )
 SET(CMAKE_CXX_FLAGS_DEBUG   "-D_DEBUG -O0 -D_FORTIFY_SOURCE=2 -fno-strict-aliasing -fno-omit-frame-pointer")
 SET(CMAKE_CXX_FLAGS_RELEASE "-O3")
 

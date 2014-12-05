@@ -33,12 +33,12 @@ namespace Util {
 
 		template<std::size_t I = 0, typename F, typename... Tp>
 		inline typename std::enable_if<I == sizeof...(Tp), void>::type
-		tuple_for_each(F& f, std::tuple<Tp...>& t)
+		tuple_for_each(F f, std::tuple<Tp...>& t)
 		{ }
 
 		template<std::size_t I = 0, typename F, typename... Tp>
 		inline typename std::enable_if<I < sizeof...(Tp), void>::type
-		tuple_for_each(F& f, std::tuple<Tp...>& t)
+		tuple_for_each(F f, std::tuple<Tp...>& t)
 		{
 			f(std::get<I>(t));
 			tuple_for_each<I + 1, F, Tp...>(f, t);
@@ -46,12 +46,12 @@ namespace Util {
 
 		template<std::size_t I = 0, typename F, typename T1, typename T2>
 		inline typename std::enable_if<I == std::tuple_size<T1>::value, void>::type
-		tuple_for_each2(F& f, T1& t1, T2& t2)
+		tuple_for_each2(F f, T1& t1, T2& t2)
 		{ }
 
 		template<std::size_t I = 0, typename F, typename T1, typename T2>
 		inline typename std::enable_if<I < std::tuple_size<T1>::value, void>::type
-		tuple_for_each2(F& f, T1& t1, T2& t2)
+		tuple_for_each2(F f, T1& t1, T2& t2)
 		{
 			f(std::get<I>(t1), std::get<I>(t2));
 			tuple_for_each2<I + 1, F, T1, T2>(f, t1, t2);
