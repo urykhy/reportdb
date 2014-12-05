@@ -44,7 +44,7 @@ class BasicFile {
 				fire_exception("fail to open "+fname, errno);
 			}
 
-			if (flags == O_RDONLY){
+			if (flags == O_RDONLY) {
 				struct stat fdata;
 				if (-1 == fstat(fd, &fdata))
 				{

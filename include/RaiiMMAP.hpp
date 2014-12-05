@@ -48,7 +48,7 @@ class RaiiMMAP {
 			fsize = fdata.st_size;
 
 			data=mmap(NULL, fsize, PROT_READ, MAP_SHARED, fd, 0 );
-			if (MAP_FAILED == data){
+			if (MAP_FAILED == data) {
 				close(fd);
 				Util::fire_exception("fail to mmap "+fname, errno);
 			}
@@ -66,7 +66,7 @@ class RaiiMMAP {
 		 @brief Get pointer to begin of mapping
 		 @return pointer
 		 */
-		void* addr(){
+		void* addr() {
 			return data;
 		}
 

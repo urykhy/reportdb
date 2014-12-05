@@ -120,7 +120,7 @@ class Create {
 
 				uint32_t bs = i->second.size() * sizeof(typename CubeData::Val);
 
-				if (filter.can_compress(bs)){
+				if (filter.can_compress(bs)) {
 					add_cube(filter.compress(i->second), i->second);
 				} else {
 					add_cube_pk(make_buf(i->second));

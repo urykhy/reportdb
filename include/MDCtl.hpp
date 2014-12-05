@@ -37,7 +37,7 @@ namespace MDC {
 			Idx index;
 			void insert(Key& key, uint32_t cube)
 			{	// insert a value to index
-				tuple_for_each2([&cube](auto& key, auto& idx){
+				tuple_for_each2([&cube](auto& key, auto& idx) {
 					idx[key].set(cube);
 				}, key, index);
 			}
@@ -50,16 +50,15 @@ namespace MDC {
 				{
 					// collect via OR cube-ids in tmp
 					// and then join via AND
-					if (limit.size()) {	// handle only if we have limits here
+					if (limit.size())
+					{	// handle only if we have limits here
 						Util::Index tmp;
 						// walk over limit values
-						for(auto i=limit.begin();
-								 i != limit.end();
-								++i)
-						{ // ask index for every val in limit
-							auto j = index.find(*i);
-							if (j != index.end()){
-								// join cube indexes
+						for (auto& i : limit)
+						{	// ask index for every val in limit
+							auto j = index.find(i);
+							if (j != index.end())
+							{	// join cube indexes
 								tmp.join(j->second);
 							}
 						}
@@ -72,11 +71,8 @@ namespace MDC {
 			{	// return index size (bitset only)
 				size_t counter = 0;
 				tuple_for_each([&counter](auto& t) mutable {
-					for(auto i = t.begin();
-							 i != t.end();
-							 ++i)
-					{
-						counter += i->second.mem_used();
+					for (auto& i : t) {
+						counter += i.second.mem_used();
 					}
 				}, index);
 				return counter;
@@ -93,7 +89,7 @@ namespace MDC {
 			{
 				bool empty = true;
 				tuple_for_each([&empty](auto& lim) mutable {
-					if (!lim.empty()){
+					if (!lim.empty()) {
 						empty = false;
 					}
 				}, limit);

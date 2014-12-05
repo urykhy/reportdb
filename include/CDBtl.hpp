@@ -22,7 +22,7 @@ namespace CDB {
 
 			template<class Data>
 			void push_back(const Data& d) {
-				tuple_for_each2([](auto& t, auto& d){ t.push_back(d); }, acc, d);
+				tuple_for_each2([](auto& t, auto& d) { t.push_back(d); }, acc, d);
 			}
 
 			void open(const std::string& fn, CDB::Direction di, const uint64_t columns)
@@ -36,11 +36,11 @@ namespace CDB {
 
 			void reserve(size_t s)
 			{
-				tuple_for_each([&s](auto& t){ t.reserve(s); }, acc);
+				tuple_for_each([&s](auto& t) { t.reserve(s); }, acc);
 			}
 
 			void write() {
-				tuple_for_each([](auto& t){ t.write(); }, acc);
+				tuple_for_each([](auto& t) { t.write(); }, acc);
 			}
 
 			size_t read(const uint64_t columns) {
@@ -59,7 +59,7 @@ namespace CDB {
 			}
 
 			void close() {
-				tuple_for_each([](auto& t){ t.close(); }, acc);
+				tuple_for_each([](auto& t) { t.close(); }, acc);
 			}
 
 			bool eof(const uint64_t columns) {
@@ -103,7 +103,7 @@ namespace CDB {
 			bool operator()(Acc& ac, const size_t rown)
 			{
 				bool rc = true;
-				tuple_for_each2([&rc,&rown](auto& t, auto& v){
+				tuple_for_each2([&rc,&rown](auto& t, auto& v) {
 					if (rc && !t.empty()) {
 						if (t.find(v.get(rown)) == t.end()) {
 							rc = false;

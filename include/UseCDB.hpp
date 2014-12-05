@@ -47,7 +47,7 @@ class Use {
 				size_t rowcount = ac.read(columns);
 				for (size_t i = 0; i < rowcount; i++)
 				{
-					if (narrow(ac, i)){
+					if (narrow(ac, i)) {
 						worker(ac, i);
 					}
 				}

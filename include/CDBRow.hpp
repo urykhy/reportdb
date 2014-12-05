@@ -92,7 +92,7 @@ class Row {
 
 		void write()
 		{
-			if (buf.empty()){
+			if (buf.empty()) {
 				return;
 			}
 

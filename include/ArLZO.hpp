@@ -24,7 +24,7 @@ class ArLZO {
 	public:
 		typedef std::vector<unsigned char> BufferT;
 
-		explicit ArLZO() : lzoTemp(LZO1X_999_MEM_COMPRESS){
+		explicit ArLZO() : lzoTemp(LZO1X_999_MEM_COMPRESS) {
 			;;
 		}
 
@@ -47,7 +47,7 @@ class ArLZO {
 				&out.front(),
 				&outLen,
 				&lzoTemp[0]);
-			if(r != LZO_E_OK){
+			if (r != LZO_E_OK) {
 				Util::fire_exception("lzo compression failed");
 			}
 
@@ -68,7 +68,7 @@ class ArLZO {
 				&countBsLZO,
 				NULL);
 
-			if(r != LZO_E_OK){
+			if (r != LZO_E_OK) {
 				Util::fire_exception("lzo decompress failed", r);
 			}
 		}
