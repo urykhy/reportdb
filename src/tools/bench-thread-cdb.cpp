@@ -27,6 +27,13 @@ static const uint32_t MAX_ROWS=10000000; // 10M
 #define MAX_GENDER 3
 #define MAX_SLOTS  72
 
+std::string human(double d)
+{
+    if (d < 1024) return std::to_string(int(d));
+    if (d < 1024 * 1024) return std::to_string((d/1024)) + "K";
+    if (d < 1024 * 1024 * 1024) return std::to_string(int(d/(1024*1024))) + "M";
+}
+
 // class to make a report
 struct Worker1
 {
@@ -227,7 +234,7 @@ int main(int argc, char** argv)
 
 		double ela = total_time.get();
 		std::cout << "Results: " << bench.calls << " in " << ela << "; "
-			<< bench.calls/ela << " calls per second" << std::endl;
+			<< human(bench.calls/ela) << " calls per second" << std::endl;
 		std::cout << "Work: " << bench.worktime
 			<< ", join: " << bench.jointime
 			<< std::endl;

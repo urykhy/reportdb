@@ -12,7 +12,6 @@ CDB:
 	CDB/TL bench is a bit slower than trivial generic impl.
 
 TL:
-	adopt boost ?
 	rm Index::first_join
 
 Bench:
@@ -26,4 +25,10 @@ Future:
 NOTES:
 	we can't use ifstream: imposible to get eof() before actual attempt to read
 
+AVX2?
+
+PERF:
+    test with i5 5257
+    ./bin/bench-thread-cdb --bench --count 4 --thread 1 :   53M rows per second
+    ./bin/bench-thread-cdb --bench --count 4 --thread 4 :  120M rows per second
 
