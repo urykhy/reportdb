@@ -8,132 +8,119 @@
 #include <pipeline.h>
 #include <list>
 #include <Log4.hpp>
+#include <memory>
 
 namespace Util {
 
-	namespace internal {
-	template<class D, class T>
-		struct ApplyT
-		{
-			const D& data;
-			T& t;
+    template<class D, class T>
+    void parallel(const D& data, T& t)
+    {
+        typedef tbb::blocked_range<typename D::size_type> Range;
+        tbb::parallel_for(
+                          Range(0, data.size()),
+                          [&t, &data](auto r){
+                              for (auto i = r.begin(); i!= r.end(); i++)
+                                  t(data[i]);
+                          }
+        );
+    }
 
-			ApplyT(const D& dataIn, T& tIn) : data(dataIn), t(tIn)
-			{
-				;;
-			}
-			template<class R>
-			void operator()(const R& r) const
-			{
-				for (typename D::size_type i = r.begin(); i!= r.end(); ++i)
-				{
-					t(data[i]);
-				}
-			}
-		};
-	} // namespace internal
+    namespace internal {
 
-	template<class D, class T>
-	void parallel(const D& data, T& t)
-	{
-		typedef tbb::blocked_range<typename D::size_type> Range;
-		tbb::parallel_for(
-				Range(0, data.size()),
-				internal::ApplyT<D, T>(data, t)
-				);
-	}
+        template<class D, class T>
+        struct Ticket {
+            typedef typename D::value_type value_type;
+            typedef typename T::TmpResult TmpResult;
+            typedef std::pair<value_type, TmpResult> Tick;
 
-	namespace internal {
+            typedef typename D::const_iterator Iterator;
 
-		template<class D, class T>
-		struct Ticket {
-			typedef typename D::value_type value_type;
-			typedef typename T::TmpResult TmpResult;
-			typedef std::pair<value_type, TmpResult> Tick;
+            const D& data;
+            Iterator iter;
+            T& t;
 
-			typedef typename D::const_iterator Iterator;
+            typedef std::list<Tick> DataFlowT;
+            DataFlowT active_data;
 
-			const D& data;
-			Iterator iter;
-			T& t;
+            Ticket(const D& dataIn, T& tIn)
+            : data(dataIn),
+            iter(dataIn.begin()),
+            t(tIn)
+            {
+            }
 
-			typedef std::list<Tick> DataFlowT;
-			DataFlowT active_data;
+            void* emit(void*)
+            {
+                if (iter != data.end()) {
+                    active_data.push_back(Tick(*iter, TmpResult()));
+                    LOG4_DEBUG("open " << *iter);
+                    ++iter;
+                    return &active_data.back();
+                } else {
+                    return NULL;
+                }
+            }
+            void* work(void* item) // parallel
+            {
+                Tick * tick_item = static_cast<Tick *>(item);
+                LOG4_DEBUG("worker start " << tick_item->first);
+                t.work(tick_item->first, tick_item->second);
+                LOG4_DEBUG("worker done " << tick_item->first);
+                return item;
+            }
+            void* join(void* item)
+            {
+                Tick * tick_item = static_cast<Tick *>(item);
+                LOG4_DEBUG("join start " << tick_item->first);
+                t.join(tick_item->first, tick_item->second);
+                LOG4_DEBUG("join done " << tick_item->first);
 
-			Ticket(const D& dataIn, T& tIn)
-			: data(dataIn),
-			  iter(dataIn.begin()),
-			  t(tIn)
-			{
-			}
+                if (&active_data.front() == tick_item)
+                {
+                    active_data.pop_front();
+                } else {
+                    LOG4_ERROR("OUT-OF-ORDER data flow though pipeline!");
+                }
 
-			void* emit(void*)
-			{
-				if (iter != data.end()) {
-					active_data.push_back(Tick(*iter, TmpResult()));
-					LOG4_DEBUG("open " << *iter);
-					++iter;
-					return &active_data.back();
-				} else {
-					return NULL;
-				}
-			}
-			void* work(void* item) // parallel
-			{
-				Tick * tick_item = static_cast<Tick *>(item);
-				LOG4_DEBUG("worker start " << tick_item->first);
-				t.work(tick_item->first, tick_item->second);
-				LOG4_DEBUG("worker done " << tick_item->first);
-				return item;
-			}
-			void* join(void* item)
-			{
-				Tick * tick_item = static_cast<Tick *>(item);
-				LOG4_DEBUG("join start " << tick_item->first);
-				t.join(tick_item->first, tick_item->second);
-				LOG4_DEBUG("join done " << tick_item->first);
+                return NULL;
+            }
+        };
 
-				if (&active_data.front() == tick_item)
-				{
-					active_data.pop_front();
-				} else {
-					LOG4_ERROR("OUT-OF-ORDER data flow though pipeline!");
-				}
+        template<bool serial_flag, class F>
+        struct Stage : public tbb::filter {
+            F func;
+            Stage(F f) : tbb::filter(serial_flag), func(f) {}
+            virtual ~Stage() throw() {}
+            virtual void* operator()(void* item) { return func(item); }
+        };
 
-				return NULL;
-			}
-		};
+        template<bool serial_flag, class L, class F>
+        auto add_stage(L& list, F f)
+        {
+            return list.push_back(std::make_shared<Stage<serial_flag, F>>(f));
+        }
 
-		template<bool serial_flag, class T, void* (T::*callback)(void*)>
-		struct Stage : public tbb::filter {
-			T& ticket;
-			Stage(T& ticketIn) : tbb::filter(serial_flag), ticket(ticketIn) {}
-			virtual ~Stage() throw() {}
-			virtual void* operator()(void* item)
-			{
-				return ((&ticket)->*callback)(item);
-			}
-		};
-	} // namespace internal
+    } // namespace internal
 
-	template<class D, class T>
-	void pipeline(const D& data, T& t)
-	{
-		typedef internal::Ticket<D, T> Ticket;
-		Ticket ticket(data, t);
+    template<class D, class T>
+    void pipeline(const D& data, T& t, int thr_count = -1)
+    {
+        typedef internal::Ticket<D, T> Ticket;
+        Ticket ticket(data, t);
 
-		tbb::pipeline pl;
-		internal::Stage<true,  Ticket, &Ticket::emit> s1(ticket);
-		internal::Stage<false, Ticket, &Ticket::work> s2(ticket);
-		internal::Stage<true,  Ticket, &Ticket::join> s3(ticket);
+        using filter_var = std::shared_ptr<tbb::filter>;
+        std::list<filter_var> filter_list;
 
-		pl.add_filter(s1);
-		pl.add_filter(s2);
-		pl.add_filter(s3);
-		pl.run(data.size());
-		pl.clear();
-		// FIXME run() we must pass N of threads + 1
-	}
+        internal::add_stage<true> (filter_list, [&ticket](void* item){ return ticket.emit(item); });
+        internal::add_stage<false>(filter_list, [&ticket](void* item){ return ticket.work(item); });
+        internal::add_stage<true> (filter_list, [&ticket](void* item){ return ticket.join(item); });
+
+        tbb::pipeline pl;
+        for (auto x : filter_list) {pl.add_filter(*x.get());}
+
+        pl.run(thr_count > 0 ? thr_count : data.size());
+        pl.clear();
+    }
 
 
 } // namespace Util

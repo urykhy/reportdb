@@ -230,7 +230,7 @@ int main(int argc, char** argv)
 		Bench bench;
 		Util::TimeMeter total_time;
 
-		Util::pipeline(fl, bench);
+		Util::pipeline(fl, bench, opt_thr_count);
 
 		double ela = total_time.get();
 		std::cout << "Results: " << bench.calls << " in " << ela << "; "
