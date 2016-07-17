@@ -158,24 +158,28 @@ struct Bench {
 	// run in parallel
 	void work(const std::string& fname, TmpResult& worker)
 	{
+        LOG4_DEBUG("worker start " << fname);
 		Util::TimeMeter tm;
 
 		CDB::Use<Root> uc(fname);
 		uc.access(narrow, worker);
 
 		worktime += tm.get();
+        LOG4_DEBUG("worker end " << fname);
 	}
 
 	// join
 	// run in order
 	void join(const std::string& fname, TmpResult& worker)
 	{
+        LOG4_DEBUG("join start " << fname);
 		Util::TimeMeter tm;
 		calls += worker.calls;
 		uid[0].join(worker.uid[0]);
 		uid[1].join(worker.uid[1]);
 		uid[2].join(worker.uid[2]);
 		jointime += tm.get();
+        LOG4_DEBUG("join end " << fname);
 	}
 };
 
@@ -208,11 +212,7 @@ int main(int argc, char** argv)
 	Util::Logger::Manager::setup(&defaultLogger, opt_verbose ? Util::ILogger::TRACE : Util::ILogger::DEBUG);
 
 	std::cout << "processing with " << opt_count
-		<< " files ("
-		<< (opt_thr_count != -1 ? opt_thr_count : tbb::task_scheduler_init::default_num_threads())
-		<< " threads)" << std::endl;
-
-	tbb::task_scheduler_init init(opt_thr_count);
+		<< " files" << std::endl;
 
 	FileListT fl;
 	for (int i=0; i < opt_count; ++i)
@@ -229,7 +229,6 @@ int main(int argc, char** argv)
 	if (opt_bench) {
 		Bench bench;
 		Util::TimeMeter total_time;
-
 		Util::pipeline(fl, bench, opt_thr_count);
 
 		double ela = total_time.get();

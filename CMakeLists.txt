@@ -1,9 +1,9 @@
 
 cmake_minimum_required(VERSION 2.6)
 
-SET(SEARCHIN lzo bm tbb)
-SET(HDRS task_scheduler_init.h lzo1x.h bm.h boost/program_options.hpp)
-SET(LLIB tbb lzo2 z boost_program_options)
+SET(SEARCHIN lzo bm)
+SET(HDRS lzo1x.h bm.h boost/program_options.hpp)
+SET(LLIB lzo2 z boost_program_options)
 INCLUDE(./Generic.cmake)
 PROJECT(ReportDB)
 
