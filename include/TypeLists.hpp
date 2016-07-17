@@ -31,6 +31,8 @@ namespace Util {
 			using Result = std::tuple<typename T<Ts>::Result...>;
 		};
 
+        //
+
 		template<std::size_t I = 0, typename F, typename... Tp>
 		inline typename std::enable_if<I == sizeof...(Tp), void>::type
 		tuple_for_each(F f, std::tuple<Tp...>& t)
@@ -43,6 +45,21 @@ namespace Util {
 			f(std::get<I>(t));
 			tuple_for_each<I + 1, F, Tp...>(f, t);
 		}
+
+        template<std::size_t I = 0, typename F, typename... Tp>
+		inline typename std::enable_if<I == sizeof...(Tp), void>::type
+		tuple_for_each(F f, const std::tuple<Tp...>& t)
+		{ }
+
+		template<std::size_t I = 0, typename F, typename... Tp>
+		inline typename std::enable_if<I < sizeof...(Tp), void>::type
+		tuple_for_each(F f, const std::tuple<Tp...>& t)
+		{
+			f(std::get<I>(t));
+			tuple_for_each<I + 1, F, Tp...>(f, t);
+		}
+
+        //
 
 		template<std::size_t I = 0, typename F, typename T1, typename T2>
 		inline typename std::enable_if<I == std::tuple_size<T1>::value, void>::type

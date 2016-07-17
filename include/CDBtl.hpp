@@ -62,7 +62,7 @@ namespace CDB {
 				tuple_for_each([](auto& t) { t.close(); }, acc);
 			}
 
-			bool eof(const uint64_t columns) {
+			bool eof(const uint64_t columns) const {
 				bool stop = false;
 				bool rc = false;
 
@@ -86,7 +86,7 @@ namespace CDB {
 		struct Narrow {
 			Index index;
 
-			uint64_t columns ()
+			uint64_t columns () const
 			{
 				uint64_t counter = 0;
 				uint64_t rc = 0;
@@ -100,7 +100,7 @@ namespace CDB {
 				return rc;
 			}
 
-			bool operator()(Acc& ac, const size_t rown)
+			bool operator()(Acc& ac, const size_t rown) const
 			{
 				bool rc = true;
 				tuple_for_each2([&rc,&rown](auto& t, auto& v) {

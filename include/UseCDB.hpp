@@ -23,19 +23,14 @@ class Use {
 
 	public:
 
-		/**
-		 @brief Constructor
-		 */
 		explicit Use(const std::string& fn)
 		: filename(fn)
 		{
 			;;
 		}
 
-		// FIXME: Narrow is really const here, but TL interface
-		// head to make const-correct
 		template<class Narrow, class W>
-		void access(Narrow& narrow, W& worker)
+		void access(const Narrow& narrow, W& worker)
 		{
 			uint64_t columns = narrow.columns() | worker.columns();
 			ac.open(filename, ROW_READ, columns);
@@ -55,9 +50,6 @@ class Use {
 			ac.close();
 		}
 
-		/**
-		 @brief Destructor
-		 */
 		~Use() throw() {
 		}
 };
